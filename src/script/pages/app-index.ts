@@ -2,6 +2,8 @@ import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 
 import './app-home';
+import './app-about';
+import './app-login';
 
 import { Router } from '@vaadin/router';
 
@@ -21,11 +23,15 @@ export class AppIndex extends LitElement {
       }
 
       #routerOutlet > .leaving {
-        animation: 160ms fadeOut ease-in-out;
+        animation: 100ms fadeOut ease-in-out;
+        overflow-y: hidden;
+        overflow-x: hidden;
       }
 
       #routerOutlet > .entering {
-        animation: 160ms fadeIn linear;
+        animation: 100ms fadeIn linear;
+        overflow-y: hidden;
+        overflow-x: hidden;
       }
 
       @keyframes fadeOut {
@@ -34,13 +40,13 @@ export class AppIndex extends LitElement {
         }
 
         to {
-          opacity: 0;
+          opacity: 0.1;
         }
       }
 
       @keyframes fadeIn {
         from {
-          opacity: 0.2;
+          opacity: 0.1;
         }
 
         to {
@@ -66,17 +72,29 @@ export class AppIndex extends LitElement {
         path: '',
         animate: true,
         children: [
-          { path: '/', component: 'app-home' },
-          {
-            path: '/about',
-            component: 'app-about',
-            action: async () => {
-              await import('./app-about.js');
-            },
-          },
+          { path: '/', component: 'app-login' },
+          { path: '/login', component: 'app-login' },
+          { path: '/about', component: 'app-about' },
         ],
       } as any,
     ]);
+
+    const pwaAuth = document.querySelector("pwa-auth");
+    pwaAuth?.addEventListener("signin-completed", ev => {
+        const signIn = ev.detail;
+        if (signIn.error) {
+            console.error("Sign in failed", signIn.error);
+            Router.go('/login')
+        } else {
+            console.log("Email: ", signIn.email);
+            console.log("Name: ", signIn.name);
+            console.log("Picture: ", signIn.imageUrl);
+            console.log("Access token", signIn.accessToken);
+            console.log("Access token expiration date", signIn.accessTokenExpiration);
+            console.log("Provider (MS, Google, FB): ", signIn.provider);
+            console.log("Raw data from provider: ", signIn.providerData);
+        }
+    });
   }
 
   render() {
@@ -86,6 +104,11 @@ export class AppIndex extends LitElement {
           <div id="routerOutlet"></div>
         </main>
       </div>
+      <pwa-auth
+        appearance="none"
+        credentialmode="silent"
+        googlekey="717873781162-2i7l6oorlm7hqqar81jml59rp6q0o9jk.apps.googleusercontent.com">
+      </pwa-auth>
     `;
   }
 }
