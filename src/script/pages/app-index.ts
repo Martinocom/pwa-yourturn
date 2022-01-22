@@ -4,6 +4,7 @@ import { customElement } from 'lit/decorators.js';
 import './app-home';
 import './app-about';
 import './app-login';
+import './app-activities';
 
 import { Router } from '@vaadin/router';
 
@@ -74,27 +75,10 @@ export class AppIndex extends LitElement {
         children: [
           { path: '/', component: 'app-login' },
           { path: '/login', component: 'app-login' },
-          { path: '/about', component: 'app-about' },
+          { path: '/activities', component: 'app-activities' },
         ],
       } as any,
     ]);
-
-    const pwaAuth = document.querySelector("pwa-auth");
-    pwaAuth?.addEventListener("signin-completed", ev => {
-        const signIn = ev.detail;
-        if (signIn.error) {
-            console.error("Sign in failed", signIn.error);
-            Router.go('/login')
-        } else {
-            console.log("Email: ", signIn.email);
-            console.log("Name: ", signIn.name);
-            console.log("Picture: ", signIn.imageUrl);
-            console.log("Access token", signIn.accessToken);
-            console.log("Access token expiration date", signIn.accessTokenExpiration);
-            console.log("Provider (MS, Google, FB): ", signIn.provider);
-            console.log("Raw data from provider: ", signIn.providerData);
-        }
-    });
   }
 
   render() {
@@ -104,11 +88,6 @@ export class AppIndex extends LitElement {
           <div id="routerOutlet"></div>
         </main>
       </div>
-      <pwa-auth
-        appearance="none"
-        credentialmode="silent"
-        googlekey="717873781162-2i7l6oorlm7hqqar81jml59rp6q0o9jk.apps.googleusercontent.com">
-      </pwa-auth>
     `;
   }
 }

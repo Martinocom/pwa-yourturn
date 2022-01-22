@@ -41,30 +41,29 @@ export class AppLogin extends LitElement {
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-    const pwaAuth = document.querySelector("pwa-auth");
-
-    if (pwaAuth != null) {
-        pwaAuth.addEventListener("signin-completed", ev => {
-            const signIn = ev.detail;
-            if (signIn.error) {
-                console.error("Sign in failed", signIn.error);
-            } else {
-                console.log("Email: ", signIn.email);
-                console.log("Name: ", signIn.name);
-                console.log("Picture: ", signIn.imageUrl);
-                console.log("Access token", signIn.accessToken);
-                console.log("Access token expiration date", signIn.accessTokenExpiration);
-                console.log("Provider (MS, Google, FB): ", signIn.provider);
-                console.log("Raw data from provider: ", signIn.providerData);
-                Router.go('/');
-            }
-        });
-    }
+    const pwaAuth = this.renderRoot.querySelector('#pwa-auth');
+    pwaAuth?.addEventListener("signin-completed", ev => {
+        const signIn = ev.detail;
+        if (signIn.error) {
+            console.error("Sign in failed", signIn.error);
+        } else {
+            localStorage.setItem("credentials", signIn)
+            console.log("Email: ", signIn.email);
+            console.log("Name: ", signIn.name);
+            console.log("Picture: ", signIn.imageUrl);
+            console.log("Access token", signIn.accessToken);
+            console.log("Access token expiration date", signIn.accessTokenExpiration);
+            console.log("Provider (MS, Google, FB): ", signIn.provider);
+            console.log("Raw data from provider: ", signIn.providerData);
+            Router.go('/activities');
+        }
+    });
   }
 
 
   render() {
     return html`
+    <div>
         <div id="center-container">
             <fluent-card id="center-card">
                 <h1>YourTurn</h1>
@@ -74,11 +73,14 @@ export class AppLogin extends LitElement {
                 </p>
 
                 <pwa-auth
+                    id="pwa-auth"
+                    credentialmode="prompt"
                     appearance="list"
                     googlekey="717873781162-2i7l6oorlm7hqqar81jml59rp6q0o9jk.apps.googleusercontent.com">
                 </pwa-auth>
             </fluent-card>
         </div>
+    </div>
     `;
   }
 }
