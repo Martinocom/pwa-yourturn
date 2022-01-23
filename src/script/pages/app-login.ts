@@ -1,6 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
+import { getAuth, setPersistence, signInWithPopup, browserSessionPersistence, GoogleAuthProvider } from "firebase/auth";
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
@@ -36,28 +37,27 @@ export class AppLogin extends LitElement {
     super();
   }
 
+  async googleLoginClick() {
+    const auth = getAuth()
+    auth.languageCode = 'it'
+
+    await setPersistence(auth, browserSessionPersistence)
+      .then(() => {
+        const provider = new GoogleAuthProvider();
+        return signInWithPopup(auth, provider);
+      })
+      .catch((error) => {
+        // Handle Errors here.
+        const errorCode = error.code;
+        const errorMessage = error.message;
+      }
+    );
+  }
 
 
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-    const pwaAuth = this.renderRoot.querySelector('#pwa-auth');
-    pwaAuth?.addEventListener("signin-completed", ev => {
-        const signIn = ev.detail;
-        if (signIn.error) {
-            console.error("Sign in failed", signIn.error);
-        } else {
-            localStorage.setItem("credentials", signIn)
-            console.log("Email: ", signIn.email);
-            console.log("Name: ", signIn.name);
-            console.log("Picture: ", signIn.imageUrl);
-            console.log("Access token", signIn.accessToken);
-            console.log("Access token expiration date", signIn.accessTokenExpiration);
-            console.log("Provider (MS, Google, FB): ", signIn.provider);
-            console.log("Raw data from provider: ", signIn.providerData);
-            Router.go('/activities');
-        }
-    });
   }
 
 
@@ -72,12 +72,7 @@ export class AppLogin extends LitElement {
                     Cool! But I need to know who you are. And I know you have a Google Account, aren't you?
                 </p>
 
-                <pwa-auth
-                    id="pwa-auth"
-                    credentialmode="prompt"
-                    appearance="list"
-                    googlekey="717873781162-2i7l6oorlm7hqqar81jml59rp6q0o9jk.apps.googleusercontent.com">
-                </pwa-auth>
+                <button @click="${this.googleLoginClick}">Google Login</button>
             </fluent-card>
         </div>
     </div>

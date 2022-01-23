@@ -1,6 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { Router } from '@vaadin/router';
+import { getFirestore, doc, onSnapshot, collection, getDocs } from "firebase/firestore";
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
@@ -44,19 +45,14 @@ export class AppActivities extends LitElement {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
 
-    const pwaAuth = this.renderRoot.querySelector('#pwa-auth');
-    const response = await pwaAuth?.signIn("Google")
+    const db = getFirestore()
 
-    if (response == null) {
-        Router.go("/login")
-    } else {
-        if (response.error != null) {
-            Router.go("/login")
-        } else {
-            console.log("Success!")
-            console.log(response)
-        }
-    }
+    const querySnapshot = await getDocs(collection(db, "activities"));
+    querySnapshot.forEach((doc) => {
+      console.log(`${doc.id} => ${doc.data()}`);
+      console.log(`${doc.data().doneMarcin}`)
+    });
+
   }
 
 
@@ -70,14 +66,9 @@ export class AppActivities extends LitElement {
                     If you are here, you're authenticated!
                 </p>
             </fluent-card>
-        </div>
 
-        <pwa-auth
-            id="pwa-auth"
-            credentialmode="prompt"
-            appearance="none"
-            googlekey="717873781162-2i7l6oorlm7hqqar81jml59rp6q0o9jk.apps.googleusercontent.com">
-        </pwa-auth>
+
+        </div>
     </div>
     `;
   }

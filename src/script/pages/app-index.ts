@@ -1,5 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
+import { initializeApp } from 'firebase/app';
+import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider } from "firebase/auth";
 
 import './app-home';
 import './app-about';
@@ -9,6 +11,7 @@ import './app-activities';
 import { Router } from '@vaadin/router';
 
 import '../components/header';
+import * as firebaseui from 'firebaseui';
 
 @customElement('app-index')
 export class AppIndex extends LitElement {
@@ -61,10 +64,36 @@ export class AppIndex extends LitElement {
     super();
   }
 
-  firstUpdated() {
+  private firebaseConfig() {
+    // Firebase configuration token
+    const firebaseConfig = {
+      apiKey: "AIzaSyCGJv_sz6CnTpsaD2_6hnh_LqvdVSpxSa0",
+      authDomain: "pwa-yourturn-3660e.firebaseapp.com",
+      projectId: "pwa-yourturn-3660e",
+      storageBucket: "pwa-yourturn-3660e.appspot.com",
+      messagingSenderId: "211004338037",
+      appId: "1:211004338037:web:eecefb4575b099ce492d3c"
+    }
+
+    const firebaseApp = initializeApp(firebaseConfig)
+
+    const auth = getAuth()
+    auth.languageCode = 'it'
+
+    onAuthStateChanged(auth, (user) => {
+      if (user) {
+        console.log("Hell yeah, you are authenticated!")
+        Router.go('/activities')
+      } else {
+        console.log("You're not logged in dude!")
+        Router.go('/login')
+      }
+    });
+  }
+
+  private routesConfig() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-
     // For more info on using the @vaadin/router check here https://vaadin.com/router
     const router = new Router(this.shadowRoot?.querySelector('#routerOutlet'));
     router.setRoutes([
@@ -73,12 +102,17 @@ export class AppIndex extends LitElement {
         path: '',
         animate: true,
         children: [
-          { path: '/', component: 'app-login' },
+          { path: '/', redirect: '/activities' },
           { path: '/login', component: 'app-login' },
           { path: '/activities', component: 'app-activities' },
         ],
       } as any,
     ]);
+  }
+
+  firstUpdated() {
+    this.routesConfig()
+    this.firebaseConfig();
   }
 
   render() {

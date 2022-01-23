@@ -16,6 +16,7 @@
     "@pwabuilder/pwaauth": "^0.9.7",
     "@pwabuilder/pwainstall": "^1.6.7",
     "@vaadin/router": "^1.7.4",
+    "firebaseui": "^6.0.0",
     "lit": "^2.0.2",
     "workbox-build": "^6.4.2",
     "workbox-core": "^6.4.2",
