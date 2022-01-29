@@ -1,6 +1,5 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { Router } from '@vaadin/router';
 import { getAuth, setPersistence, signInWithPopup, browserSessionPersistence, GoogleAuthProvider } from "firebase/auth";
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
@@ -50,6 +49,8 @@ export class AppLogin extends LitElement {
         // Handle Errors here.
         const errorCode = error.code;
         const errorMessage = error.message;
+        console.log(errorCode)
+        console.log(errorMessage)
       }
     );
   }

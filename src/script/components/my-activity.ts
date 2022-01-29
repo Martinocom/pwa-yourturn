@@ -1,21 +1,24 @@
-import { LitElement, css, html } from 'lit';
+import { LitElement, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 
-@customElement('activity')
-class Activity extends LitElement {
+@customElement('my-activity')
+export class MyActivity extends LitElement {
 
-    @property()
+    @property({type: String})
     title: string = 'Title';
 
-
-    @property()
+    @property({type: String})
     imgSrc: string = 'src';
 
-    @property()
+    @property({type: String})
+    lastDone: string = 'src';
+
+    @property({type: Number})
     doneMarcin: number = 2;
 
-    @property()
+    @property({type: Number})
     doneMarta: number = 1;
+
 
     currentTurnOf = "Marcin"
 
@@ -40,5 +43,11 @@ class Activity extends LitElement {
                 <button @click=${this.onPhotoClick}>Photo</button>
             </div>
         `
+    }
+}
+
+declare global {
+    interface HTMLElementTagNameMap {
+        "my-activity": MyActivity
     }
 }

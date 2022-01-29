@@ -1,11 +1,12 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { Router } from '@vaadin/router';
-import { getFirestore, doc, onSnapshot, collection, getDocs } from "firebase/firestore";
+import { getFirestore, collection, getDocs } from "firebase/firestore";
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
 import '@pwabuilder/pwaauth';
+
+import '../components/my-activity';
 
 
 @customElement('app-activities')
@@ -34,41 +35,82 @@ export class AppActivities extends LitElement {
     `;
   }
 
+  activities: any[] = []
+
+  savedHtml = {
+    loader:  html`<fluent-progress-ring></fluent-progress-ring>`,
+  }
+
+  renderedHtml = {
+    loader: html``,
+  }
+
 
   constructor() {
     super();
   }
 
 
+  async enableLoading() {
+    this.renderedHtml.loader = this.savedHtml.loader;
+    this.requestUpdate()
+  }
+
+  async disableLoading() {
+    this.renderedHtml.loader = html``
+    this.requestUpdate()
+  }
 
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
 
     const db = getFirestore()
+    this.enableLoading()
 
-    const querySnapshot = await getDocs(collection(db, "activities"));
-    querySnapshot.forEach((doc) => {
-      console.log(`${doc.id} => ${doc.data()}`);
-      console.log(`${doc.data().doneMarcin}`)
+    getDocs(collection(db, "activities")).then(snapshot => {
+      var activityHolder = this.shadowRoot?.getElementById("activities-holder")
+
+      if (activityHolder != null) {
+        activityHolder.innerHTML = ""
+
+        snapshot.forEach((doc) => {
+          var activity = document.createElement('my-activity')
+          activity.title = doc.data().title
+          activity.doneMarcin = doc.data().doneMarcin
+          activity.doneMarta = doc.data().doneMarta
+          activity.lastDone = doc.data().lastDone
+
+          if (activityHolder != null) {
+            activityHolder.append(activity)
+          }
+
+        });
+      }
+
+      this.disableLoading()
     });
-
   }
 
 
   render() {
     return html`
     <div>
-        <div id="center-container">
-            <fluent-card id="center-card">
-                <h1>YourTurn</h1>
-                <p>
-                    If you are here, you're authenticated!
-                </p>
-            </fluent-card>
+      <div id="center-container">
+        <fluent-card id="center-card">
+          <h1>YourTurn</h1>
+          <p>
+              If you are here, you're authenticated!
+          </p>
+        </fluent-card>
 
+        ${this.renderedHtml.loader}
+
+        <div id="activities-holder">
 
         </div>
+
+      </div>
     </div>
     `;
   }

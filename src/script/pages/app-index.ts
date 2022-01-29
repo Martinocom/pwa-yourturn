@@ -1,7 +1,7 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
 import { initializeApp } from 'firebase/app';
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, GoogleAuthProvider } from "firebase/auth";
+import { getAuth, onAuthStateChanged } from "firebase/auth";
 
 import './app-home';
 import './app-about';
@@ -11,7 +11,6 @@ import './app-activities';
 import { Router } from '@vaadin/router';
 
 import '../components/header';
-import * as firebaseui from 'firebaseui';
 
 @customElement('app-index')
 export class AppIndex extends LitElement {
@@ -75,11 +74,12 @@ export class AppIndex extends LitElement {
       appId: "1:211004338037:web:eecefb4575b099ce492d3c"
     }
 
-    const firebaseApp = initializeApp(firebaseConfig)
-
+    // Initialize
+    initializeApp(firebaseConfig)
     const auth = getAuth()
     auth.languageCode = 'it'
 
+    // Monitoring login state
     onAuthStateChanged(auth, (user) => {
       if (user) {
         console.log("Hell yeah, you are authenticated!")
