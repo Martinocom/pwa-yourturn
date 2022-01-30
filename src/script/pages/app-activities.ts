@@ -80,6 +80,7 @@ export class AppActivities extends LitElement {
           activity.doneMarcin = doc.data().doneMarcin
           activity.doneMarta = doc.data().doneMarta
           activity.lastDone = doc.data().lastDone
+          activity.imageBase64 = doc.data().image
 
           if (activityHolder != null) {
             activityHolder.append(activity)
