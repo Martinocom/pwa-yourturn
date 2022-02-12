@@ -20,9 +20,19 @@ export class AppActivities extends LitElement {
         flex-direction: column;
       }
 
-      #activity-container {
+      #activities-container {
         display: flex;
-        flex-direction: column;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: flex-start;
+        justify-content: flex-start;
+        width: 100%;
+      }
+
+      #activities-container > *  {
+        margin: 15px;
+        max-width: 420px;
+        flex: 1;
       }
 
       #activity {
@@ -69,7 +79,7 @@ export class AppActivities extends LitElement {
     this.enableLoading()
 
     getDocs(collection(db, "activities")).then(snapshot => {
-      var activityHolder = this.shadowRoot?.getElementById("activities-holder")
+      var activityHolder = this.shadowRoot?.getElementById("activities-container")
 
       if (activityHolder != null) {
         activityHolder.innerHTML = ""
@@ -77,9 +87,6 @@ export class AppActivities extends LitElement {
         snapshot.forEach((doc) => {
           var activity = document.createElement('my-activity')
           activity.title = doc.data().title
-          activity.doneMarcin = doc.data().doneMarcin
-          activity.doneMarta = doc.data().doneMarta
-          activity.lastDone = doc.data().lastDone
           activity.imageBase64 = doc.data().image
 
           if (activityHolder != null) {
@@ -107,7 +114,7 @@ export class AppActivities extends LitElement {
 
         ${this.renderedHtml.loader}
 
-        <div id="activities-holder">
+        <div id="activities-container">
 
         </div>
 
