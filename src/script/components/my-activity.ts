@@ -1,12 +1,12 @@
 import { LitElement, html, css } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 
-
-
 const imgWidth = css`95px`;
 const imgHeight = imgWidth;
 const nameWidth = css`55px`;
 const ballSize = css`14px`;
+const cameraSize = css`20px`;
+
 
 @customElement('my-activity')
 export class MyActivity extends LitElement {
@@ -26,9 +26,15 @@ export class MyActivity extends LitElement {
 
     private dominantRGB: any;
     private image = new Image()
+    private filePicker: HTMLInputElement | null | undefined = null;
+    private marcinBalls: Element | null | undefined = null;
+    private martaBalls: Element | null | undefined = null;
+
+    checksMarcinBall: any[] = []
+    checksMartaBall: any[] = []
 
     nextTurnName: string = ""
-    lastCheckDate: string = "";
+    lastCheckDate: any = {}
 
 
     constructor() {
@@ -37,6 +43,7 @@ export class MyActivity extends LitElement {
 
     async firstUpdated() {
         // Set variables
+        this.image.id = "photo";
         this.image.src = "data:image/png;base64," + this.imageBase64;
         this.nextTurnName = this.getNextTurnName();
         this.lastCheckDate = this.getLastCheckDate();
@@ -52,20 +59,158 @@ export class MyActivity extends LitElement {
             this.style.setProperty("--full-color", this.getMainColorFromAvg())
         };
 
+        // Ordering all dates
+        if (this.checksMarcin != null && this.checksMarcin != undefined) this.checksMarcin = this.checksMarcin.sort()
+        if (this.checksMarta != null && this.checksMarta != undefined) this.checksMarta = this.checksMarta.sort()
+
+        // Set the reference to balls container
+        this.marcinBalls = this.shadowRoot?.querySelector('#marcin-balls');
+        this.martaBalls = this.shadowRoot?.querySelector('#marta-balls');
+
         this.requestUpdate();
     }
 
     getNextTurnName(): string {
-        return "Marta"
+        if (this.checksMarcin.length > this.checksMarta.length) {
+            return "Marta"
+        }
+        if (this.checksMarcin.length < this.checksMarta.length) {
+            return "Marcin"
+        }
+        if (this.checksMarcin.length == 0) {
+            return "Marcin"
+        }
+        if (this.checksMarta.length == 0) {
+            return "Marta"
+        }
+
+        return "Sto cazzo"
     }
 
-    getLastCheckDate(): string {
-        return "12/02/2022   17:22"
+    getLastCheckDate(): any {
+        var maxDateMarcin = null;
+        var maxDateMarta = null;
+
+        if (this.checksMarcin != null && this.checksMarcin.length > 0) {
+            maxDateMarcin = this.checksMarcin[this.checksMarcin.length-1];
+        }
+        if (this.checksMarta != null && this.checksMarta.length > 0) {
+            maxDateMarta = this.checksMarta[this.checksMarta.length-1];
+        }
+
+        if (maxDateMarcin != null && maxDateMarta != null) {
+            if (maxDateMarcin >= maxDateMarta) {
+                return {
+                    date: maxDateMarcin,
+                    who: "Marcin"
+                }
+            } else {
+                return {
+                    date: maxDateMarta,
+                    who: "Marta"
+                }
+            }
+        } else {
+            if (maxDateMarcin != null) {
+                return {
+                    date: maxDateMarcin,
+                    who: "Marcin"
+                }
+            } else if (maxDateMarta != null) {
+                return {
+                    date: maxDateMarta,
+                    who: "Marcin"
+                }
+            } else {
+                return {
+                    date: null,
+                    who: null
+                }
+            }
+        }
     }
 
     setBalls() {
+        this.checksMarcin.forEach(check => {
+            if (check == this.lastCheckDate.date) {
+                this.checksMarcinBall.push({
+                    type: "main",
+                    date: check
+                })
+            } else {
+                this.checksMarcinBall.push({
+                    type: "full",
+                    date: check
+                })
+            }
+        })
 
+        this.checksMarta.forEach(check => {
+            if (check == this.lastCheckDate.date) {
+                this.checksMartaBall.push({
+                    type: "main",
+                    date: check
+                })
+            } else {
+                this.checksMartaBall.push({
+                    type: "full",
+                    date: check
+                })
+            }
+        })
+
+        if (this.nextTurnName == "Marta") {
+            this.checksMartaBall.push({
+                type: "empty",
+                date: null
+            })
+        } else {
+            this.checksMarcinBall.push({
+                type: "empty",
+                date: null
+            })
+        }
     }
+
+    async onFileChoosen() {
+        await this.upload();
+    }
+
+    private upload(): Promise<void> {
+        return new Promise<void>(async (resolve, reject) => {
+
+            if (!this.filePicker || !this.filePicker.files || this.filePicker.files.length <= 0) {
+                reject('No file selected.');
+                return;
+            }
+            const myFile = this.filePicker.files[0];
+            console.log(myFile);
+
+            resolve();
+        });
+    }
+
+    private timeConverter(timestamp: any){
+        if (timestamp != null && timestamp != undefined) {
+            var a = new Date(timestamp.seconds * 1000)
+            var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
+            var year = a.getFullYear()
+            var month = months[a.getMonth()]
+            var date = a.getDate()
+            var hour = a.getHours()
+            var min = a.getMinutes()
+
+            var realDay = date.toString().length == 1 ? "0" + date.toString() : date.toString();
+            var realHour = hour.toString().length == 1 ? "0" + hour.toString() : hour.toString();
+            var realMin = min.toString().length == 1 ? "0" + min.toString() : min.toString();
+
+            var time = realDay + '/' + month + '/' + year + '   ' + realHour + ':' + realMin
+            return time
+        } else {
+            return "You suck"
+        }
+      }
+
     /*
 
     getLatestDate(data: Date[]) : Date | null {
@@ -225,26 +370,27 @@ export class MyActivity extends LitElement {
                 display: flex;
                 flex-flow: row;
                 border-radius: 25px;
-                box-shadow: 0 2px 4px 0 rgba(0, 0, 0, 0.2), 0 3px 10px 0 rgba(0, 0, 0, 0.19);
-                min-width: 380px;
-                max-width: 420px;
+                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(0, 0, 0, 0.19);
+                /*min-width: 350px;
+                max-width: 350px;*/
                 padding: 15px;
                 background: var(--background);
             }
 
-            #image {
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                overflow: hidden;
+            #image-button {
+                margin-right: 15px;
+            }
+
+
+            #photo {
+                object-fit: fill;
                 min-with: ${imgWidth};
                 width: ${imgWidth};
                 max-width: ${imgWidth};
                 min-height: ${imgHeight};
                 height: ${imgHeight};
                 max-height: ${imgHeight};
-                border-radius: 10px;
-                margin-right: 15px;
+                border-radius: 15px;
             }
 
             #content {
@@ -303,6 +449,7 @@ export class MyActivity extends LitElement {
 
             #details {
                 margin-top: 5px;
+                margin-left: -5px;
                 display: flex;
                 flex-flow: row;
                 flex: 1;
@@ -328,116 +475,53 @@ export class MyActivity extends LitElement {
             #button {
                 display: flex;
                 justify-content: flex-end;
-                align-items: right;
+                align-items: center;
                 flex: 1;
+                margin-right: 5px;
             }
 
-        /*
-            #activity-card {
-                max-width: 300px;
-                min-width: 280px;
-                width: 280px;
-                margin: 0;
-                padding: 0;
-            }
-
-            .header-container {
+            #camera {
                 position: relative;
+                min-with: ${cameraSize};
+                width: ${cameraSize};
+                max-width: ${cameraSize};
+                min-height: ${cameraSize};
+                height: ${cameraSize};
+                max-height: ${cameraSize};
+                z-idex: 999;
             }
 
-            .header {
-                position: absolute;
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                top: 0;
-                left: 0;
-                width: 100%;
-                z-index: 999;
-                margin: 0;
-                padding: 12px 16px;
-                background: rgba(255, 255, 255, 0.8);
-                box-sizing: border-box;
+            #image-container {
+                position: relative;
+                min-with: ${imgWidth};
+                width: ${imgWidth};
+                max-width: ${imgWidth};
+                min-height: ${imgHeight};
+                height: ${imgHeight};
+                max-height: ${imgHeight};
             }
 
-            .header .title {
-                font-size: 1.1em;
-                font-weight: bold;
-                color: #333333;
-            }
-
-            .header .subtitle {
-                font-size: 0.9em;
-                font-weight: normal;
-                color: #333333;
-            }
-
-            .button {
-                display: flex;
-                justify-content: center;
-                width: 58px;
-                height: 38px;
-                border-radius: 90px;
-                background: rgb(66, 135, 245);
-                line-height: 38px;
-                text-align: center;
-            }
-
-            .button:hover {
-                background: rgba(66, 135, 245, 0.8);
-                cursor: pointer;
-            }
-
-            .fill {
+            #image-button-border {
+                background: rgba(0, 0, 0, 0.6);
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                overflow: hidden
-            }
-            .fill img {
-                flex-shrink: 0;
-                min-width: 100%;
-                min-height: 100%;
-                max-height: 200px;
-            }
-
-            .content {
-                padding: 12px;
-            }
-
-            .spaced-table {
-                margin-top: 10px;
-            }
-
-            .table-column {
-                min-width: 70px;
-                text-align: right;
-                padding-right: 10px;
-            }
-
-            .table-full-column {
+                position: absolute;
+                bottom: 0;
+                left: 0;
                 width: 100%;
+                padding: 5px;
                 box-sizing: border-box;
+                border-radius: 0px 0px 15px 15px;
+                border: 1px solid rgba(0, 0, 0, 0.6);
             }
 
-            .dot-container {
-                display: flex;
-                flex-direction: row;
+            #image-button-border:hover {
+                cursor: pointer;
+                background: rgba(0, 0, 0, 0.45);
+                border: 1px solid rgba(255, 255, 255, 0.1);
             }
 
-            .dot {
-                width: 12px;
-                height: 12px;
-                background: rgb(66, 135, 245);
-                border-radius: 90px;
-                border: 1px solid transparent;
-                margin-right: 3px;
-                border: 1px solid #333333;
-            }
-
-            .dot.empty {
-                background: transparent;
-            }*/
         `;
       }
 
@@ -450,8 +534,22 @@ export class MyActivity extends LitElement {
         return html`
             <div>
                 <div id="card" class="card">
-                    <div id="image">
-                        ${this.image}
+                    <div id="image-button">
+                        <div id="image-container">
+                            ${this.image}
+
+                            <form>
+                                <label for="image-input" id="image-button-border">
+                                    <img id="camera" src="assets/icons/camera-64.png" />
+                                </label>
+                                <input type="file" id="image-input" name="image-input" accept="image/x-png,image/jpeg,image/gif" style="display: none;" @change="${this.onFileChoosen}"/>
+                            </form>
+
+                            <!--
+                            <div id="image-button-border">
+                                <img id="camera" src="assets/icons/camera-64.png" />
+                            </div>-->
+                        </div>
                     </div>
 
                     <div id="content">
@@ -460,24 +558,27 @@ export class MyActivity extends LitElement {
                         <div id="members">
                             <div class="member">
                                 <h2>Marcin</h2>
-                                <div class="balls">
+                                <div id="balls-marcin" class="balls">
+                                    ${this.checksMarcinBall.map(i => html`<div class="ball ${i.type}"></div>`)}
+                                    <!--
                                     <div class="ball full"></div>
                                     <div class="ball full"></div>
-                                    <div class="ball main"></div>
+                                    <div class="ball main"></div>-->
                                 </div>
                             </div>
 
                             <div class="member">
                                 <h2>Marta</h2>
-                                <div class="balls">
-                                    <div class="ball empty"></div>
+                                <div id="balls-marta" class="balls">
+                                    ${this.checksMartaBall.map(i => html`<div class="ball ${i.type}"></div>`)}
+                                    <!--<div class="ball empty"></div>-->
                                 </div>
                             </div>
                         </div>
 
                         <div id="details">
                             <div id="date" class="detail">
-                                <span>${this.lastCheckDate}</span>
+                                <span>${this.timeConverter(this.lastCheckDate.date)}</span>
                             </div>
 
                             <div id="next" class="detail">
@@ -485,65 +586,7 @@ export class MyActivity extends LitElement {
                             </div>
                         </div>
                     </div>
-
-                    <div id="button">
-                        <img src="./assets/icons/camera-64.png">
-                    </div>
                 </div>
-
-                <!--
-                <fluent-card id="activity-card">
-                    <div class="header-container">
-                        <div class="header">
-                            <div>
-                                <div class="title">${this.title}</div>
-                                <div class="subtitle">➥ ${this.nextTurnName}</div>
-                            </div>
-
-                            <div class="button">
-                                <div>📷</div>
-                            </div>
-                        </div>
-
-                        <div class="fill">
-                            ${this.image}
-                        </div>
-                    </div>
-
-                    <div class="content">
-                        <table>
-                            <tr>
-                                <td class="table-column">Marcin</td>
-                                <td class="table-full-column">
-                                    <div class="dot-container">
-                                        <div class="dot"></div>
-                                        <div class="dot"></div>
-                                        <div class="dot"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td class="table-column">Marta</td>
-                                <td class="table-full-column">
-                                    <div class="dot-container">
-                                        <div class="dot empty"></div>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-
-                        <table class="spaced-table">
-                            <tr>
-                                <td class="table-column">Ultimo</td>
-                                <td class="table-full-column">Marcin <br/><span style="font-size: 0.8em;">30/01/2022 16:40</span></td>
-                            </tr>
-                            <tr>
-                                <td class="table-column">Prossimo</td>
-                                <td class="table-full-column">Marta</td>
-                            </tr>
-                        </table>
-                    </div>
-                </fluent-card>-->
             </div>
         `
     }

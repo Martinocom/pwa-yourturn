@@ -31,8 +31,8 @@ export class AppActivities extends LitElement {
 
       #activities-container > *  {
         margin: 15px;
-        max-width: 420px;
-        flex: 1;
+        /*max-width: 380px;
+        flex: 1;*/
       }
 
       #activity {
@@ -88,6 +88,8 @@ export class AppActivities extends LitElement {
           var activity = document.createElement('my-activity')
           activity.title = doc.data().title
           activity.imageBase64 = doc.data().image
+          activity.checksMarcin = doc.data().checksMarcin
+          activity.checksMarta = doc.data().checksMarta
 
           if (activityHolder != null) {
             activityHolder.append(activity)
