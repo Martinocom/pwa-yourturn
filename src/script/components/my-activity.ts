@@ -1,10 +1,11 @@
 import { LitElement, html, css } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 
-const imgWidth = css`95px`;
-const imgHeight = imgWidth;
+const imgWidth = css`110px`;
+const imgHeight = css`100px`;
 const nameWidth = css`55px`;
-const ballSize = css`14px`;
+const ballHeight = css`14px`;
+const ballWidth = css`40px`;
 const cameraSize = css`20px`;
 
 
@@ -26,6 +27,7 @@ export class MyActivity extends LitElement {
 
     private dominantRGB: any;
     private image = new Image()
+    private fillImage = new Image()
     private filePicker: HTMLInputElement | null | undefined = null;
     private marcinBalls: Element | null | undefined = null;
     private martaBalls: Element | null | undefined = null;
@@ -43,8 +45,10 @@ export class MyActivity extends LitElement {
 
     async firstUpdated() {
         // Set variables
-        this.image.id = "photo";
+        this.image.id = "image";
         this.image.src = "data:image/png;base64," + this.imageBase64;
+        this.fillImage.id = "fill-image";
+        this.fillImage.src = this.image.src;
         this.nextTurnName = this.getNextTurnName();
         this.lastCheckDate = this.getLastCheckDate();
 
@@ -135,12 +139,14 @@ export class MyActivity extends LitElement {
             if (check == this.lastCheckDate.date) {
                 this.checksMarcinBall.push({
                     type: "main",
-                    date: check
+                    date: check,
+                    content: ""
                 })
             } else {
                 this.checksMarcinBall.push({
                     type: "full",
-                    date: check
+                    date: check,
+                    content: ""
                 })
             }
         })
@@ -149,12 +155,14 @@ export class MyActivity extends LitElement {
             if (check == this.lastCheckDate.date) {
                 this.checksMartaBall.push({
                     type: "main",
-                    date: check
+                    date: check,
+                    content: ""
                 })
             } else {
                 this.checksMartaBall.push({
                     type: "full",
-                    date: check
+                    date: check,
+                    content: ""
                 })
             }
         })
@@ -162,12 +170,14 @@ export class MyActivity extends LitElement {
         if (this.nextTurnName == "Marta") {
             this.checksMartaBall.push({
                 type: "empty",
-                date: null
+                date: null,
+                content: "next"
             })
         } else {
             this.checksMarcinBall.push({
                 type: "empty",
-                date: null
+                date: null,
+                content: "next"
             })
         }
     }
@@ -366,160 +376,176 @@ export class MyActivity extends LitElement {
 
     static get styles() {
         return css`
+            /* ------------------------------------------ */
+            /* HEADER */
+
             .card {
                 display: flex;
-                flex-flow: row;
+                flex-flow: column;
                 border-radius: 25px;
                 box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(0, 0, 0, 0.19);
-                /*min-width: 350px;
-                max-width: 350px;*/
-                padding: 15px;
+                min-width: 330px;
+                max-width: 380px;
+                min-height: 200px;
+                height: 200px;
+                max-height: 200px;
                 background: var(--background);
+                flex: 1;
+                overflow: hidden;
+                outline: none;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
+                outline: 0;
             }
 
-            #image-button {
-                margin-right: 15px;
+            #top {
+                min-height: 100px;
+                height: 100px;
+                max-height: 100px;
+                width: 100%;
+                position: relative;
+                overflow: hidden;
             }
 
+            #image-blur {
+                z-index: 0;
+            }
 
-            #photo {
-                object-fit: fill;
-                min-with: ${imgWidth};
-                width: ${imgWidth};
-                max-width: ${imgWidth};
-                min-height: ${imgHeight};
-                height: ${imgHeight};
-                max-height: ${imgHeight};
+            #fill-image {
+                min-height: 100px;
+                height: 100px;
+                max-height: 100px;
+                width: 100%;
+                filter: blur(8px);
+            }
+
+            #image-container {
+                position: absolute;
+                top: 0;
+                left: 50%;
+                -webkit-transform: translateX(-50%);
+                transform: translateX(-50%)
+                z-index: 10;
+            }
+
+            #tags {
+                padding: 15px;
+                position: absolute;
+                top: 0;
+                left: 0;
+                right: 0;
+                z-index: 20;
+                display: flex;
+                flex-flow: row;
+                justify-content: space-between;
+            }
+
+            .tag {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                background: rgba(0, 0, 0, 0.7);
                 border-radius: 15px;
+                padding: 5px 15px;
+                font-size: 0.9em;
+                color: white;
             }
 
-            #content {
-                margin-top: 2px;
+            .tag.next {
+                background: rgba(0, 50, 0, 0.8);
+            }
+
+
+
+
+            /* ------------------------------------------ */
+            /* BODY */
+            #body {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                flex-flow: row;
+            }
+
+            #left-body {
+                padding: 15px;
+                flex: 1;
             }
 
             h1 {
                 margin: 0;
                 padding: 0;
-                font-size: 1.1em;
+                font-size: 1.2em;
             }
 
-            #members {
+            #users {
                 margin-top: 5px;
             }
 
-            .member {
-                margin-top: 3px;
+            .user {
+                margin-bottom: 3px;
                 display: flex;
-                flex-flow: row;
-            }
-
-            h2 {
-                margin: 0px;
-                padding: 0px;
-                min-width: ${nameWidth};
-                font-size: 1em;
-                font-weight: normal;
-            }
-
-            .balls {
-                display: flex;
-                flex-flow: row;
-            }
-
-            .ball {
-                width: ${ballSize};
-                height: ${ballSize};
-                border-radius: 25px;
-                margin-right: 5px;
-            }
-
-            .ball.full {
-                background: var(--accent-color);
-                border: 1px solid var(--full-color);
-            }
-
-            .ball.main {
-                background: var(--full-color);
-                border: 1px solid transparent;
-            }
-
-            .ball.empty {
-                border: 1px solid var(--full-color);
-            }
-
-            #details {
-                margin-top: 5px;
-                margin-left: -5px;
-                display: flex;
-                flex-flow: row;
-                flex: 1;
-            }
-
-            .detail {
-                border-radius: 5px;
-                padding: 5px 10px;
-                color: white;
-                font-size: 0.9em;
-                line-height: 0.9em;
-            }
-
-            #date {
-                background: rgba(0, 0, 0, 0.3);
-                margin-right: 5px;
-            }
-
-            #next {
-                background: rgba(0, 0, 0, 0.45);
-            }
-
-            #button {
-                display: flex;
-                justify-content: flex-end;
+                justify-content: space-between;
                 align-items: center;
-                flex: 1;
-                margin-right: 5px;
+                flex-flow: row;
+                width: 100%;
             }
+
+            .name {
+                width: 60px;
+                min-width: 60px;
+                max-width: 60px;
+            }
+
+            .progress {
+                flex: 1;
+                border-radius: 15px;
+                height: 5px;
+                width: 100%;
+                border: 1px solid var(--full-color);
+            }
+
+            .counter {
+                display: flex;
+                justify-content: right;
+                align-items: center;
+                width: 25px;
+                min-width: 25px;
+                max-width: 25px;
+            }
+
+
+            #right-body {
+                background: var(--full-color);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                padding-left: 20px;
+                padding-right: 20px;
+            }
+
+            #right-body:hover {
+                cursor: pointer;
+                box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.1);
+            }
+
+            #right-body:active {
+                cursor: pointer;
+                box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.2);
+            }
+
 
             #camera {
-                position: relative;
                 min-with: ${cameraSize};
                 width: ${cameraSize};
                 max-width: ${cameraSize};
                 min-height: ${cameraSize};
                 height: ${cameraSize};
                 max-height: ${cameraSize};
-                z-idex: 999;
-            }
-
-            #image-container {
-                position: relative;
-                min-with: ${imgWidth};
-                width: ${imgWidth};
-                max-width: ${imgWidth};
-                min-height: ${imgHeight};
-                height: ${imgHeight};
-                max-height: ${imgHeight};
-            }
-
-            #image-button-border {
-                background: rgba(0, 0, 0, 0.6);
-                display: flex;
-                justify-content: center;
-                align-items: center;
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                width: 100%;
-                padding: 5px;
-                box-sizing: border-box;
-                border-radius: 0px 0px 15px 15px;
-                border: 1px solid rgba(0, 0, 0, 0.6);
-            }
-
-            #image-button-border:hover {
-                cursor: pointer;
-                background: rgba(0, 0, 0, 0.45);
-                border: 1px solid rgba(255, 255, 255, 0.1);
             }
 
         `;
@@ -534,59 +560,105 @@ export class MyActivity extends LitElement {
         return html`
             <div>
                 <div id="card" class="card">
-                    <div id="image-button">
+                    <div id="top">
+
+                        <div id="image-blur">
+                            ${this.fillImage}
+                        </div>
+
                         <div id="image-container">
                             ${this.image}
-
-                            <form>
-                                <label for="image-input" id="image-button-border">
-                                    <img id="camera" src="assets/icons/camera-64.png" />
-                                </label>
-                                <input type="file" id="image-input" name="image-input" accept="image/x-png,image/jpeg,image/gif" style="display: none;" @change="${this.onFileChoosen}"/>
-                            </form>
-
-                            <!--
-                            <div id="image-button-border">
-                                <img id="camera" src="assets/icons/camera-64.png" />
-                            </div>-->
                         </div>
+
+                        <div id="tags">
+                            <div class="tag">${this.lastCheckDate.who + " - " + this.timeConverter(this.lastCheckDate.date)}</div>
+                            <div class="tag next">➥ ${this.nextTurnName}</div>
+                        </div>
+
                     </div>
 
-                    <div id="content">
-                        <h1>${this.title}</h1>
+                    <div id=body>
+                        <div id="left-body">
+                            <h1>${this.title}</h1>
 
-                        <div id="members">
-                            <div class="member">
-                                <h2>Marcin</h2>
-                                <div id="balls-marcin" class="balls">
-                                    ${this.checksMarcinBall.map(i => html`<div class="ball ${i.type}"></div>`)}
-                                    <!--
-                                    <div class="ball full"></div>
-                                    <div class="ball full"></div>
-                                    <div class="ball main"></div>-->
+                            <div id="users">
+                                <div class="user">
+                                    <div class="name">Maricn</div>
+                                    <div class="progress" id="progressMarcin"></div>
+                                    <div class="counter">3</div>
                                 </div>
-                            </div>
 
-                            <div class="member">
-                                <h2>Marta</h2>
-                                <div id="balls-marta" class="balls">
-                                    ${this.checksMartaBall.map(i => html`<div class="ball ${i.type}"></div>`)}
-                                    <!--<div class="ball empty"></div>-->
+                                <div class="user">
+                                    <div class="name">Marta</div>
+                                    <div class="progress" id="progressMarta"></div>
+                                    <div class="counter">1</div>
                                 </div>
                             </div>
                         </div>
 
-                        <div id="details">
-                            <div id="date" class="detail">
-                                <span>${this.timeConverter(this.lastCheckDate.date)}</span>
-                            </div>
+                        <div id="right-body">
+                            <img id="camera" src="assets/icons/camera-64.png" />
+                        </div>
 
+                    </div>
+
+
+                    <!--<div id="card-top">-->
+                        <!--<div id="details">
                             <div id="next" class="detail">
                                 <span>➥ ${this.nextTurnName}</span>
                             </div>
+
+                            <div id="date" class="detail">
+                                <img id="calendar" class="small-icon" src="assets/icons/calendar.png" />
+                                <span>${this.timeConverter(this.lastCheckDate.date)}</span>
+                            </div>
+                        </div>-->
+                    <!--</div>-->
+
+                    <!--
+                        <div id="image-button">
+                            <div id="image-container">
+                                ${this.image}
+
+                                <form>
+                                    <label for="image-input" id="image-button-border">
+                                        <img id="camera" src="assets/icons/camera-64.png" />
+                                    </label>
+                                    <input type="file" id="image-input" name="image-input" accept="image/x-png,image/jpeg,image/gif" style="display: none;" @change="${this.onFileChoosen}"/>
+                                </form>
+                            </div>
                         </div>
-                    </div>
-                </div>
+
+                        <div id="content">
+                            <div id="details">
+                                <div id="date" class="detail">
+                                    <img id="calendar" class="small-icon" src="assets/icons/calendar.png" />
+                                    <span>${this.timeConverter(this.lastCheckDate.date)}</span>
+                                </div>
+                            </div>
+                            <h1>${this.title}</h1>
+
+                            <div id="members">
+                                <div class="member">
+                                    <h2>Marcin</h2>
+                                    <div id="balls-marcin" class="balls">
+                                        ${this.checksMarcinBall.map(i => html`<div class="ball ${i.type}">${i.content}</div>`)}
+
+                                    </div>
+                                </div>
+
+                                <div class="member">
+                                    <h2>Marta</h2>
+                                    <div id="balls-marta" class="balls">
+                                        ${this.checksMartaBall.map(i => html`<div class="ball ${i.type}">${i.content}</div>`)}
+
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                </div>-->
             </div>
         `
     }

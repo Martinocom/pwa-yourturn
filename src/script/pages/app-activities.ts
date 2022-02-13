@@ -31,16 +31,6 @@ export class AppActivities extends LitElement {
 
       #activities-container > *  {
         margin: 15px;
-        /*max-width: 380px;
-        flex: 1;*/
-      }
-
-      #activity {
-        padding: 10px;
-        flex-grow: 1;
-        flex-shrink: 1;
-        min-width: 20em;
-        max-width: 25em;
       }
     `;
   }
