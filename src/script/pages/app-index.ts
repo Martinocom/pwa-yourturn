@@ -16,11 +16,7 @@ import '../components/header';
 export class AppIndex extends LitElement {
   static get styles() {
     return css`
-      main {
-        padding-left: 16px;
-        padding-right: 16px;
-        padding-bottom: 16px;
-      }
+
       #routerOutlet > * {
         width: 100% !important;
       }

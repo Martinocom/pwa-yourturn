@@ -7,6 +7,7 @@ import '@pwabuilder/pwainstall';
 import '@pwabuilder/pwaauth';
 
 import '../components/my-activity';
+import '../components/header';
 
 
 @customElement('app-activities')
@@ -96,20 +97,14 @@ export class AppActivities extends LitElement {
   render() {
     return html`
     <div>
+      <app-header></app-header>
       <div id="center-container">
-        <fluent-card id="center-card">
-          <h1>YourTurn</h1>
-          <p>
-              If you are here, you're authenticated!
-          </p>
-        </fluent-card>
 
+        <!-- Loading Bar -->
         ${this.renderedHtml.loader}
 
-        <div id="activities-container">
-
-        </div>
-
+        <!-- Activities container -->
+        <div id="activities-container"></div>
       </div>
     </div>
     `;

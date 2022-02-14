@@ -1,13 +1,7 @@
 import { LitElement, html, css } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 
-const imgWidth = css`110px`;
-const imgHeight = css`100px`;
-const nameWidth = css`55px`;
-const ballHeight = css`14px`;
-const ballWidth = css`40px`;
 const cameraSize = css`20px`;
-
 
 @customElement('my-activity')
 export class MyActivity extends LitElement {
@@ -29,11 +23,11 @@ export class MyActivity extends LitElement {
     private image = new Image()
     private fillImage = new Image()
     private filePicker: HTMLInputElement | null | undefined = null;
-    private marcinBalls: Element | null | undefined = null;
-    private martaBalls: Element | null | undefined = null;
 
-    checksMarcinBall: any[] = []
-    checksMartaBall: any[] = []
+    private totalChecks = 0;
+    private percentMarcin = 0;
+    private percentMarta = 0;
+
 
     nextTurnName: string = ""
     lastCheckDate: any = {}
@@ -52,9 +46,6 @@ export class MyActivity extends LitElement {
         this.nextTurnName = this.getNextTurnName();
         this.lastCheckDate = this.getLastCheckDate();
 
-        // Set the balls for users
-        this.setBalls()
-
         // Set the dominant color
         this.image.onload= (event) => {
             this.dominantRGB = this.getAverageRGB(this.image);
@@ -63,13 +54,43 @@ export class MyActivity extends LitElement {
             this.style.setProperty("--full-color", this.getMainColorFromAvg())
         };
 
-        // Ordering all dates
-        if (this.checksMarcin != null && this.checksMarcin != undefined) this.checksMarcin = this.checksMarcin.sort()
-        if (this.checksMarta != null && this.checksMarta != undefined) this.checksMarta = this.checksMarta.sort()
+        // Ordering all dates and set total checks
+        if (this.checksMarcin != null && this.checksMarcin != undefined) {
+            this.checksMarcin = this.checksMarcin.sort()
+            this.totalChecks = this.checksMarcin.length;
+        }
+        if (this.checksMarta != null && this.checksMarta != undefined) {
+            this.checksMarta = this.checksMarta.sort()
+            if (this.totalChecks < this.checksMarta.length) {
+                this.totalChecks = this.checksMarta.length;
+            }
+        }
 
-        // Set the reference to balls container
-        this.marcinBalls = this.shadowRoot?.querySelector('#marcin-balls');
-        this.martaBalls = this.shadowRoot?.querySelector('#marta-balls');
+        if (this.totalChecks > 0) {
+            if (this.checksMarcin != null && this.checksMarcin != undefined) {
+                if (this.totalChecks == this.checksMarcin.length) {
+                    this.percentMarcin = 100;
+                } else {
+                    this.percentMarcin = Math.trunc((100 * this.checksMarcin.length) / this.totalChecks);
+                }
+            } else {
+                this.percentMarcin = 0;
+            }
+
+            if (this.checksMarta != null && this.checksMarta != undefined) {
+                if (this.totalChecks == this.checksMarta.length) {
+                    this.percentMarta = 100;
+                } else {
+                    this.percentMarta = Math.trunc((100 * this.checksMarta.length) / this.totalChecks);
+                }
+            } else {
+                this.percentMarta = 0;
+            }
+
+        } else {
+            this.percentMarcin = 0;
+            this.percentMarta = 0;
+        }
 
         this.requestUpdate();
     }
@@ -134,54 +155,6 @@ export class MyActivity extends LitElement {
         }
     }
 
-    setBalls() {
-        this.checksMarcin.forEach(check => {
-            if (check == this.lastCheckDate.date) {
-                this.checksMarcinBall.push({
-                    type: "main",
-                    date: check,
-                    content: ""
-                })
-            } else {
-                this.checksMarcinBall.push({
-                    type: "full",
-                    date: check,
-                    content: ""
-                })
-            }
-        })
-
-        this.checksMarta.forEach(check => {
-            if (check == this.lastCheckDate.date) {
-                this.checksMartaBall.push({
-                    type: "main",
-                    date: check,
-                    content: ""
-                })
-            } else {
-                this.checksMartaBall.push({
-                    type: "full",
-                    date: check,
-                    content: ""
-                })
-            }
-        })
-
-        if (this.nextTurnName == "Marta") {
-            this.checksMartaBall.push({
-                type: "empty",
-                date: null,
-                content: "next"
-            })
-        } else {
-            this.checksMarcinBall.push({
-                type: "empty",
-                date: null,
-                content: "next"
-            })
-        }
-    }
-
     async onFileChoosen() {
         await this.upload();
     }
@@ -219,101 +192,7 @@ export class MyActivity extends LitElement {
         } else {
             return "You suck"
         }
-      }
-
-    /*
-
-    getLatestDate(data: Date[]) : Date | null {
-        if (data != null && data.length > 0) {
-            // convert to timestamp and sort
-            var sorted_ms = data.map(e => e.getTime()).sort();
-            // take latest
-            var latest_ms = sorted_ms[sorted_ms.length-1];
-            // convert to js date object
-            return new Date(latest_ms);
-        }
-
-        return null
     }
-
-    getLastDoneDate(): Date | null {
-        // Get who is the last
-        var maxMarcinDate = this.getLatestDate(this.checksMarcin)
-        var maxMartaDate = this.getLatestDate(this.checksMarta)
-
-        if (maxMarcinDate == null && maxMartaDate == null) {
-            // No checks yet
-            return null
-        }
-        else if (maxMarcinDate != null && maxMartaDate == null) {
-            // Marta has not done yet
-            return maxMartaDate
-        }
-        else if (maxMarcinDate = null && maxMartaDate != null) {
-            // Marcin has not done yet
-            return maxMarcinDate
-        }
-        else if (maxMarcinDate != null && maxMartaDate != null) {
-            // Both are done
-            if (maxMarcinDate > maxMartaDate) {
-                return maxMarcinDate
-            }
-            else if (maxMarcinDate < maxMartaDate) {
-                return maxMartaDate
-            }
-            else {
-                return null
-            }
-        }
-
-        return null
-    }
-
-    getLastDoneUser(): string {
-        // Get who is the last
-        var maxMarcinDate = this.getLatestDate(this.checksMarcin)
-        var maxMartaDate = this.getLatestDate(this.checksMarta)
-
-        if (maxMarcinDate == null && maxMartaDate == null) {
-            // No checks yet
-            return ""
-        }
-        else if (maxMarcinDate != null && maxMartaDate == null) {
-            // Marta has not done yet
-            return "Marta"
-        }
-        else if (maxMarcinDate = null && maxMartaDate != null) {
-            // Marcin has not done yet
-            return "Marcin"
-        }
-        else if (maxMarcinDate != null && maxMartaDate != null) {
-            // Both are done
-            if (maxMarcinDate > maxMartaDate) {
-                return "Marta"
-            }
-            else if (maxMarcinDate < maxMartaDate) {
-                return "Marcin"
-            }
-            else {
-                ""
-            }
-        }
-
-
-        return ""
-    }
-
-    getNextTurnName(): string {
-        if (this.checksMarcin.length > this.checksMarta.length) {
-            return "Marta"
-        }
-        else if (this.checksMarcin.length < this.checksMarta.length) {
-            return "Marcin"
-        }
-        else {
-            return "Stocazzo"
-        }
-    }*/
 
     private getAverageRGB(imgEl: any) {
 
@@ -483,31 +362,39 @@ export class MyActivity extends LitElement {
             }
 
             #users {
-                margin-top: 5px;
+                margin-top: 10px;
             }
 
             .user {
                 margin-bottom: 3px;
                 display: flex;
                 justify-content: space-between;
-                align-items: center;
+                align-items: baseline;
                 flex-flow: row;
                 width: 100%;
             }
 
             .name {
-                width: 60px;
-                min-width: 60px;
-                max-width: 60px;
+                width: 50px;
+                min-width: 50px;
+                max-width: 50px;
+                color: var(--full-color);
+                text-align: right;
+                margin-right: 10px;
             }
 
             .progress {
                 flex: 1;
                 border-radius: 15px;
-                height: 5px;
+                height: 10px;
                 width: 100%;
-                border: 1px solid var(--full-color);
+                border: 1px solid var(--accent-color);
+                box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                -ms-box-sizing: border-box;
+                -webkit-box-sizing: border-box;
             }
+
 
             .counter {
                 display: flex;
@@ -516,6 +403,8 @@ export class MyActivity extends LitElement {
                 width: 25px;
                 min-width: 25px;
                 max-width: 25px;
+                font-size: 0.9em;
+                color: var(--full-color);
             }
 
 
@@ -584,14 +473,14 @@ export class MyActivity extends LitElement {
                             <div id="users">
                                 <div class="user">
                                     <div class="name">Maricn</div>
-                                    <div class="progress" id="progressMarcin"></div>
-                                    <div class="counter">3</div>
+                                    <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.percentMarcin}%, transparent ${100 - this.percentMarcin}%);" ></div>
+                                    <div class="counter">${this.checksMarcin.length}</div>
                                 </div>
 
                                 <div class="user">
                                     <div class="name">Marta</div>
-                                    <div class="progress" id="progressMarta"></div>
-                                    <div class="counter">1</div>
+                                    <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.percentMarta}%, transparent ${100 - this.percentMarta}%);" ></div>
+                                    <div class="counter">${this.checksMarta.length}</div>
                                 </div>
                             </div>
                         </div>
@@ -601,64 +490,7 @@ export class MyActivity extends LitElement {
                         </div>
 
                     </div>
-
-
-                    <!--<div id="card-top">-->
-                        <!--<div id="details">
-                            <div id="next" class="detail">
-                                <span>➥ ${this.nextTurnName}</span>
-                            </div>
-
-                            <div id="date" class="detail">
-                                <img id="calendar" class="small-icon" src="assets/icons/calendar.png" />
-                                <span>${this.timeConverter(this.lastCheckDate.date)}</span>
-                            </div>
-                        </div>-->
-                    <!--</div>-->
-
-                    <!--
-                        <div id="image-button">
-                            <div id="image-container">
-                                ${this.image}
-
-                                <form>
-                                    <label for="image-input" id="image-button-border">
-                                        <img id="camera" src="assets/icons/camera-64.png" />
-                                    </label>
-                                    <input type="file" id="image-input" name="image-input" accept="image/x-png,image/jpeg,image/gif" style="display: none;" @change="${this.onFileChoosen}"/>
-                                </form>
-                            </div>
-                        </div>
-
-                        <div id="content">
-                            <div id="details">
-                                <div id="date" class="detail">
-                                    <img id="calendar" class="small-icon" src="assets/icons/calendar.png" />
-                                    <span>${this.timeConverter(this.lastCheckDate.date)}</span>
-                                </div>
-                            </div>
-                            <h1>${this.title}</h1>
-
-                            <div id="members">
-                                <div class="member">
-                                    <h2>Marcin</h2>
-                                    <div id="balls-marcin" class="balls">
-                                        ${this.checksMarcinBall.map(i => html`<div class="ball ${i.type}">${i.content}</div>`)}
-
-                                    </div>
-                                </div>
-
-                                <div class="member">
-                                    <h2>Marta</h2>
-                                    <div id="balls-marta" class="balls">
-                                        ${this.checksMartaBall.map(i => html`<div class="ball ${i.type}">${i.content}</div>`)}
-
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                </div>-->
+                </div>
             </div>
         `
     }
