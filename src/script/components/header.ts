@@ -3,7 +3,7 @@ import { property, customElement } from 'lit/decorators.js';
 
 @customElement('app-header')
 export class AppHeader extends LitElement {
-  @property({ type: String }) title = 'PWA Starter';
+  @property({ type: String }) title = 'YourTurn';
 
   @property() enableBack: boolean = false;
 
@@ -13,16 +13,19 @@ export class AppHeader extends LitElement {
         display: flex;
         justify-content: space-between;
         align-items: center;
-        background: var(--app-color-primary);
+        background: #f5f5f5;
         color: white;
         height: 4em;
+        padding: 0px 32px;
+        box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05), 0 2px 5px 0 rgba(0, 0, 0, 0.1);
       }
 
       header h1 {
         margin-top: 0;
         margin-bottom: 0;
-        font-size: 20px;
+        font-size: 1.5em;
         font-weight: bold;
+        color: #333;
       }
 
       nav fluent-anchor {
@@ -62,10 +65,7 @@ export class AppHeader extends LitElement {
     return html`
       <header>
         <div id="back-button-block">
-          ${this.enableBack ? html`<fluent-anchor appearance="accent" href="/">
-            Back
-          </fluent-anchor>` : null}
-
+          ${this.enableBack ? html`<fluent-anchor appearance="accent" href="/">Back</fluent-anchor>` : null}
           <h1>${this.title}</h1>
         </div>
       </header>
