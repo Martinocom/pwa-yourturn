@@ -8,7 +8,14 @@
 }
 
 html {
-  --app-color-primary: #252525;
+  --app-color-primary: #4F77AA;
+  --app-color-primary-light: #78AED3;
+  --app-color-gray: #D2E1E6;
+
+  --app-margin-small: 16px;
+  --app-margin-big: 32px;
+
+  --app-card-max-size: 690px;
 }
 
 

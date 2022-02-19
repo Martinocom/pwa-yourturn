@@ -15,35 +15,46 @@ export class AppActivities extends LitElement {
 
   static get styles() {
     return css`
-      #center-container {
-        margin-top: 18px;
-        display: flex;
-        flex-direction: column;
-      }
-
       #activities-container {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        align-items: flex-start;
         justify-content: flex-start;
+        align-items: center;
         width: 100%;
       }
 
       #activities-container > *  {
-        margin: 15px;
+        max-width: var(--app-card-max-size);
+        margin: var(--app-margin-small);
+        margin-top: 0px;
+        flex: 1;
+      }
+
+      #activities-container > *:first-child {
+        margin-top: var(--app-margin-small);
+      }
+
+      @media only screen and (min-width: 724px) {
+        #activities-container > * {
+          margin-top: var(--app-margin-small);
+          margin-bottom: 0px;
+        }
       }
     `;
   }
 
   activities: any[] = []
+  error = "";
 
   savedHtml = {
     loader:  html`<fluent-progress-ring></fluent-progress-ring>`,
+    error: html`<div>An error occurred during loading: ${this.error}</div>`
   }
 
   renderedHtml = {
     loader: html``,
+    error: html``
   }
 
 
@@ -62,6 +73,16 @@ export class AppActivities extends LitElement {
     this.requestUpdate()
   }
 
+  async enableError() {
+    this.renderedHtml.error = this.savedHtml.error;
+    this.requestUpdate()
+  }
+
+  async disableError() {
+    this.renderedHtml.error = html``
+    this.requestUpdate()
+  }
+
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
@@ -69,7 +90,8 @@ export class AppActivities extends LitElement {
     const db = getFirestore()
     this.enableLoading()
 
-    getDocs(collection(db, "activities")).then(snapshot => {
+    getDocs(collection(db, "activities"))
+    .then(snapshot => {
       var activityHolder = this.shadowRoot?.getElementById("activities-container")
 
       if (activityHolder != null) {
@@ -90,6 +112,11 @@ export class AppActivities extends LitElement {
       }
 
       this.disableLoading()
+    })
+    .catch(error => {
+      this.disableLoading()
+      this.error = error;
+      this.enableError();
     });
   }
 
@@ -98,14 +125,12 @@ export class AppActivities extends LitElement {
     return html`
     <div>
       <app-header></app-header>
-      <div id="center-container">
-
-        <!-- Loading Bar -->
-        ${this.renderedHtml.loader}
-
         <!-- Activities container -->
-        <div id="activities-container"></div>
-      </div>
+        <div id="activities-container">
+          <!-- Loading Bar -->
+          ${this.renderedHtml.loader}
+          ${this.renderedHtml.error}
+        </div>
     </div>
     `;
   }
