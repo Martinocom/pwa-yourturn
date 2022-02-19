@@ -18,6 +18,9 @@ export class MyActivity extends LitElement {
     @property({type: Array})
     checksMarta: Date[]= [];
 
+    @property({type: Boolean})
+    isLoadingModeEnabled: boolean = false;
+
 
     private dominantRGB: any;
     private image = new Image()
@@ -28,7 +31,6 @@ export class MyActivity extends LitElement {
     private percentMarcin = 0;
     private percentMarta = 0;
 
-
     nextTurnName: string = ""
     lastCheckDate: any = {}
 
@@ -38,61 +40,74 @@ export class MyActivity extends LitElement {
     }
 
     async firstUpdated() {
-        // Set variables
-        this.image.id = "image";
-        this.image.src = "data:image/png;base64," + this.imageBase64;
-        this.fillImage.id = "fill-image";
-        this.fillImage.src = this.image.src;
-        this.nextTurnName = this.getNextTurnName();
-        this.lastCheckDate = this.getLastCheckDate();
+        if (!this.isLoadingModeEnabled) {
+            // Set variables
+            this.image.id = "image";
+            this.image.src = "data:image/png;base64," + this.imageBase64;
+            this.fillImage.id = "fill-image";
+            this.fillImage.src = this.image.src;
+            this.nextTurnName = this.getNextTurnName();
+            this.lastCheckDate = this.getLastCheckDate();
 
-        // Set the dominant color
-        this.image.onload= (event) => {
-            this.dominantRGB = this.getAverageRGB(this.image);
-            this.style.setProperty("--background", this.getBackgroundFromAvg())
-            this.style.setProperty("--accent-color", this.getAccentFromAvg())
-            this.style.setProperty("--full-color", this.getMainColorFromAvg())
-        };
+            // Set the dominant color
+            this.image.onload= (_) => {
+                this.dominantRGB = this.getAverageRGB(this.image);
+                this.style.setProperty("--background", this.getBackgroundFromAvg())
+                this.style.setProperty("--accent-color", this.getAccentFromAvg())
+                this.style.setProperty("--full-color", this.getMainColorFromAvg())
+            };
 
-        // Ordering all dates and set total checks
-        if (this.checksMarcin != null && this.checksMarcin != undefined) {
-            this.checksMarcin = this.checksMarcin.sort()
-            this.totalChecks = this.checksMarcin.length;
-        }
-        if (this.checksMarta != null && this.checksMarta != undefined) {
-            this.checksMarta = this.checksMarta.sort()
-            if (this.totalChecks < this.checksMarta.length) {
-                this.totalChecks = this.checksMarta.length;
-            }
-        }
-
-        if (this.totalChecks > 0) {
+            // Ordering all dates and set total checks
             if (this.checksMarcin != null && this.checksMarcin != undefined) {
-                if (this.totalChecks == this.checksMarcin.length) {
-                    this.percentMarcin = 100;
-                } else {
-                    this.percentMarcin = Math.trunc((100 * this.checksMarcin.length) / this.totalChecks);
+                this.checksMarcin = this.checksMarcin.sort()
+                this.totalChecks = this.checksMarcin.length;
+            }
+            if (this.checksMarta != null && this.checksMarta != undefined) {
+                this.checksMarta = this.checksMarta.sort()
+                if (this.totalChecks < this.checksMarta.length) {
+                    this.totalChecks = this.checksMarta.length;
                 }
+            }
+
+            if (this.totalChecks > 0) {
+                if (this.checksMarcin != null && this.checksMarcin != undefined) {
+                    if (this.totalChecks == this.checksMarcin.length) {
+                        this.percentMarcin = 100;
+                    } else {
+                        this.percentMarcin = Math.trunc((100 * this.checksMarcin.length) / this.totalChecks);
+                    }
+                } else {
+                    this.percentMarcin = 0;
+                }
+
+                if (this.checksMarta != null && this.checksMarta != undefined) {
+                    if (this.totalChecks == this.checksMarta.length) {
+                        this.percentMarta = 100;
+                    } else {
+                        this.percentMarta = Math.trunc((100 * this.checksMarta.length) / this.totalChecks);
+                    }
+                } else {
+                    this.percentMarta = 0;
+                }
+
             } else {
                 this.percentMarcin = 0;
-            }
-
-            if (this.checksMarta != null && this.checksMarta != undefined) {
-                if (this.totalChecks == this.checksMarta.length) {
-                    this.percentMarta = 100;
-                } else {
-                    this.percentMarta = Math.trunc((100 * this.checksMarta.length) / this.totalChecks);
-                }
-            } else {
                 this.percentMarta = 0;
             }
 
+            this.requestUpdate();
         } else {
-            this.percentMarcin = 0;
-            this.percentMarta = 0;
+            this.image.id = "image";
+            this.image.src = "";
+            this.fillImage.id = "fill-image";
+            this.fillImage.src = "";
+            this.nextTurnName = "";
+            this.lastCheckDate = "";
+            this.dominantRGB = this.getAverageRGB(this.image);
+            this.style.setProperty("--background", "#FEFEFE")
+            this.style.setProperty("--accent-color", "#F1F1F1")
+            this.style.setProperty("--full-color", "#EDEDED")
         }
-
-        this.requestUpdate();
     }
 
     getNextTurnName(): string {
@@ -197,7 +212,7 @@ export class MyActivity extends LitElement {
     private getAverageRGB(imgEl: any) {
 
         var blockSize = 5, // only visit every 5 pixels
-            defaultRGB = {r:0,g:0,b:0}, // for non-supporting envs
+            defaultRGB = {r:150,g:150,b:200}, // for non-supporting envs
             canvas = document.createElement('canvas'),
             context = canvas.getContext && canvas.getContext('2d'),
             data, width, height,
@@ -218,7 +233,6 @@ export class MyActivity extends LitElement {
         try {
             data = context.getImageData(0, 0, width, height);
         } catch(e) {
-            /* security error, img on diff domain */alert('x');
             return defaultRGB;
         }
 
@@ -244,11 +258,11 @@ export class MyActivity extends LitElement {
     }
 
     private getBackgroundFromAvg(): string {
-        return 'rgba(' + [Math.trunc(this.dominantRGB.r), Math.trunc(this.dominantRGB.g), Math.trunc(this.dominantRGB.b)].join(',') + ', 0.2)'
+        return 'rgba(' + [Math.trunc(this.dominantRGB.r), Math.trunc(this.dominantRGB.g), Math.trunc(this.dominantRGB.b)].join(',') + ', 0.1)'
     }
 
     private getAccentFromAvg(): string {
-        return 'rgba(' + [Math.trunc(this.dominantRGB.r), Math.trunc(this.dominantRGB.g), Math.trunc(this.dominantRGB.b)].join(',') + ', 0.4)'
+        return 'rgba(' + [Math.trunc(this.dominantRGB.r), Math.trunc(this.dominantRGB.g), Math.trunc(this.dominantRGB.b)].join(',') + ', 0.5)'
     }
 
 
@@ -262,14 +276,13 @@ export class MyActivity extends LitElement {
                 display: flex;
                 flex-flow: column;
                 border-radius: 25px;
-                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.1), 0 2px 5px 0 rgba(0, 0, 0, 0.19);
+                box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.07), 0 2px 3px 0 rgba(0, 0, 0, 0.15);
                 min-width: 330px;
-                max-width: 380px;
+                max-width: var(--app-card-max-size);
                 min-height: 200px;
                 height: 200px;
                 max-height: 200px;
                 background: var(--background);
-                flex: 1;
                 overflow: hidden;
                 outline: none;
                 -webkit-touch-callout: none;
@@ -278,7 +291,6 @@ export class MyActivity extends LitElement {
                 -moz-user-select: none;
                 -ms-user-select: none;
                 user-select: none;
-                outline: 0;
             }
 
             #top {
@@ -288,6 +300,7 @@ export class MyActivity extends LitElement {
                 width: 100%;
                 position: relative;
                 overflow: hidden;
+                flex-grow: 1;
             }
 
             #image-blur {
@@ -321,6 +334,7 @@ export class MyActivity extends LitElement {
                 display: flex;
                 flex-flow: row;
                 justify-content: space-between;
+                flex: 1;
             }
 
             .tag {
@@ -335,10 +349,8 @@ export class MyActivity extends LitElement {
             }
 
             .tag.next {
-                background: rgba(0, 50, 0, 0.8);
+                background: rgba(14, 38, 17, 0.8);
             }
-
-
 
 
             /* ------------------------------------------ */
@@ -348,6 +360,7 @@ export class MyActivity extends LitElement {
                 height: 100%;
                 display: flex;
                 flex-flow: row;
+                flex: 1;
             }
 
             #left-body {
@@ -378,7 +391,7 @@ export class MyActivity extends LitElement {
                 width: 50px;
                 min-width: 50px;
                 max-width: 50px;
-                color: var(--full-color);
+                color: #000000;
                 text-align: right;
                 margin-right: 10px;
             }
@@ -409,7 +422,8 @@ export class MyActivity extends LitElement {
 
 
             #right-body {
-                background: var(--full-color);
+                background: linear-gradient(135deg, var(--accent-color), var(--full-color));"
+                //background: var(--full-color);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -437,6 +451,12 @@ export class MyActivity extends LitElement {
                 max-height: ${cameraSize};
             }
 
+            #upload-photo {
+                opacity: 0;
+                position: absolute;
+                z-index: -1;
+            }
+
         `;
       }
 
@@ -447,49 +467,48 @@ export class MyActivity extends LitElement {
 
     render() {
         return html`
-            <div>
-                <div id="card" class="card">
-                    <div id="top">
-
-                        <div id="image-blur">
-                            ${this.fillImage}
-                        </div>
-
-                        <div id="image-container">
-                            ${this.image}
-                        </div>
-
-                        <div id="tags">
-                            <div class="tag">${this.lastCheckDate.who + " - " + this.timeConverter(this.lastCheckDate.date)}</div>
-                            <div class="tag next">➥ ${this.nextTurnName}</div>
-                        </div>
-
+            <div id="card" class="card">
+                <div id="top">
+                    <div id="image-blur">
+                        ${this.fillImage}
                     </div>
 
-                    <div id=body>
-                        <div id="left-body">
-                            <h1>${this.title}</h1>
+                    <div id="image-container">
+                        ${this.image}
+                    </div>
 
-                            <div id="users">
-                                <div class="user">
-                                    <div class="name">Maricn</div>
-                                    <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.percentMarcin}%, transparent ${100 - this.percentMarcin}%);" ></div>
-                                    <div class="counter">${this.checksMarcin.length}</div>
-                                </div>
+                    <div id="tags">
+                        <div class="tag">${this.lastCheckDate.who + " - " + this.timeConverter(this.lastCheckDate.date)}</div>
+                        <div class="tag next">➥ ${this.nextTurnName}</div>
+                    </div>
+                </div>
 
-                                <div class="user">
-                                    <div class="name">Marta</div>
-                                    <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.percentMarta}%, transparent ${100 - this.percentMarta}%);" ></div>
-                                    <div class="counter">${this.checksMarta.length}</div>
-                                </div>
+                <div id=body>
+                    <div id="left-body">
+                        <h1>${this.title}</h1>
+
+                        <div id="users">
+                            <div class="user">
+                                <div class="name">Maricn</div>
+                                <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.percentMarcin}%, transparent ${100 - this.percentMarcin}%);" ></div>
+                                <div class="counter">${this.checksMarcin.length}</div>
+                            </div>
+
+                            <div class="user">
+                                <div class="name">Marta</div>
+                                <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.percentMarta}%, transparent ${100 - this.percentMarta}%);" ></div>
+                                <div class="counter">${this.checksMarta.length}</div>
                             </div>
                         </div>
-
-                        <div id="right-body">
-                            <img id="camera" src="assets/icons/camera-64.png" />
-                        </div>
-
                     </div>
+
+                    <div id="right-body">
+                        <label for="upload-photo">
+                            <img id="camera" src="assets/icons/camera-64.png" />
+                            <input type="file" name="photo" id="upload-photo" accept="image/png, image/jpeg"/>
+                        </label>
+                    </div>
+
                 </div>
             </div>
         `
