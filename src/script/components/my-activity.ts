@@ -431,8 +431,6 @@ export class MyActivity extends LitElement {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                padding-left: 20px;
-                padding-right: 20px;
             }
 
             #right-body > *:first-child {
@@ -442,6 +440,7 @@ export class MyActivity extends LitElement {
                 justify-content: center;
                 align-items: center;
                 cursor: pointer;
+                width: 48px;
             }
 
             #right-body:hover {
