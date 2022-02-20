@@ -4,8 +4,7 @@ import { property, customElement } from 'lit/decorators.js';
 @customElement('app-header')
 export class AppHeader extends LitElement {
   @property({ type: String }) title = 'YourTurn';
-
-  @property() enableBack: boolean = false;
+  @property({ type: String }) version = 'Color Fix + Camera';
 
   static get styles() {
     return css`
@@ -26,6 +25,13 @@ export class AppHeader extends LitElement {
         font-weight: bold;
         color: white;
       }
+
+      h5 {
+        font-size: 0.9em;
+        font-weght: normal;
+        margin-left: 15px;
+        color: white;
+      }
     `;
   }
 
@@ -34,10 +40,18 @@ export class AppHeader extends LitElement {
   }
 
   render() {
-    return html`
-      <header>
-          <h1>${this.title}</h1>
-      </header>
-    `;
+    if (this.version == null || this.version == "") {
+      return html`
+        <header>
+            <h1>${this.title}</h1>
+        </header>
+      `;
+    } else {
+      return html`
+        <header>
+            <h1>${this.title} <h5>(${this.version})</h5></h1>
+        </header>
+      `;
+    }
   }
 }
