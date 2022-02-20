@@ -520,7 +520,6 @@ export class MyActivity extends LitElement {
                             <img id="camera" src="assets/icons/camera-64.png" />
                             <input type="file" name="photo" id="upload-photo" accept="image/*" capture="environment"/>
                         </label>
-                        <!--<img id="camera" src="assets/icons/camera-64.png" />-->
                     </div>
 
                 </div>
