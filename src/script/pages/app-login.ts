@@ -1,10 +1,11 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { getAuth, setPersistence, signInWithPopup, browserSessionPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
 import '@pwabuilder/pwaauth';
+import { Router } from '@vaadin/router';
 
 
 @customElement('app-login')
@@ -46,10 +47,10 @@ export class AppLogin extends LitElement {
     const result = await getRedirectResult(auth);
     if (result) {
       // This is the signed-in user
-      const user = result.user;
+      //const user = result.user;
       // This gives you a Facebook Access Token.
       //const credential = result.user.getIdToken()
-      const token = result.user.getIdToken()
+      //const token = result.user.getIdToken()
     } else {
       console.log("You suck at programmming")
     }
@@ -58,7 +59,7 @@ export class AppLogin extends LitElement {
 
     await setPersistence(auth, browserSessionPersistence)
       .then(() => {
-
+        Router.go('/activities')
         //return signInWithPopup(auth, provider);
       })
       .catch((error) => {
