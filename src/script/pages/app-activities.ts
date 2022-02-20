@@ -8,6 +8,8 @@ import '@pwabuilder/pwaauth';
 
 import '../components/my-activity';
 import '../components/header';
+import '../components/photo-capture';
+import { PhotoCapture } from '../components/photo-capture';
 
 
 @customElement('app-activities')
@@ -43,6 +45,8 @@ export class AppActivities extends LitElement {
       }
     `;
   }
+
+  photoCapture = new PhotoCapture()
 
   activities: any[] = []
   error = "";
@@ -130,6 +134,11 @@ export class AppActivities extends LitElement {
           <!-- Loading Bar -->
           ${this.renderedHtml.loader}
           ${this.renderedHtml.error}
+        </div>
+
+        <div>
+          <h1>Capture Element</h1>
+          ${this.photoCapture}
         </div>
     </div>
     `;
