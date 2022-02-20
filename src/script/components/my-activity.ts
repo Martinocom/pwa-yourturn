@@ -170,6 +170,10 @@ export class MyActivity extends LitElement {
         }
     }
 
+    async onTakePhotoClick() {
+
+    }
+
     async onFileChoosen() {
         await this.upload();
     }
@@ -431,6 +435,15 @@ export class MyActivity extends LitElement {
                 padding-right: 20px;
             }
 
+            #right-body > *:first-child {
+                width: 100%;
+                height: 100%;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                cursor: pointer;
+            }
+
             #right-body:hover {
                 cursor: pointer;
                 box-shadow: inset 0 0 100px 100px rgba(255, 255, 255, 0.1);
@@ -502,11 +515,12 @@ export class MyActivity extends LitElement {
                         </div>
                     </div>
 
-                    <div id="right-body">
+                    <div id="right-body" @click=>
                         <label for="upload-photo">
                             <img id="camera" src="assets/icons/camera-64.png" />
-                            <input type="file" name="photo" id="upload-photo" accept="image/png, image/jpeg"/>
+                            <input type="file" name="photo" id="upload-photo" accept="image/*" capture="environment"/>
                         </label>
+                        <!--<img id="camera" src="assets/icons/camera-64.png" />-->
                     </div>
 
                 </div>
