@@ -10,6 +10,7 @@ import '../components/my-activity';
 import '../components/header';
 import '../components/photo-capture';
 import { PhotoCapture } from '../components/photo-capture';
+import { PhotoDialog } from '../components/dialogs/photo-dialog';
 
 
 @customElement('app-activities')
@@ -47,6 +48,7 @@ export class AppActivities extends LitElement {
   }
 
   photoCapture = new PhotoCapture()
+  photoDialog = new PhotoDialog()
 
   activities: any[] = []
   error = "";
@@ -103,6 +105,7 @@ export class AppActivities extends LitElement {
 
         snapshot.forEach((doc) => {
           var activity = document.createElement('my-activity')
+          activity.id = doc.id
           activity.title = doc.data().title
           activity.imageBase64 = doc.data().image
           activity.checksMarcin = doc.data().checksMarcin
@@ -110,6 +113,12 @@ export class AppActivities extends LitElement {
 
           if (activityHolder != null) {
             activityHolder.append(activity)
+            activity.addEventListener('take-photo', e => {
+              console.log("hello")
+              if (e != null && e.detail != null && e.detail.id != null) {
+                this.onTakePhoto(e.detail.id)
+              }
+            })
           }
 
         });
@@ -122,6 +131,25 @@ export class AppActivities extends LitElement {
       this.error = error;
       this.enableError();
     });
+
+    this.photoDialog.addEventListener('photo-accept', e => { this.onAccept() })
+    this.photoDialog.addEventListener('photo-cancel', e => { this.onCancel() })
+  }
+
+  async onTakePhoto(id: string) {
+    console.log("take")
+    this.photoDialog.id = id
+    this.photoDialog.open()
+  }
+
+  async onAccept() {
+    console.log("accepted")
+    this.photoDialog.close()
+  }
+
+  async onCancel() {
+    console.log("cancelled")
+    this.photoDialog.close()
   }
 
 
@@ -137,8 +165,7 @@ export class AppActivities extends LitElement {
         </div>
 
         <div>
-          <h1>Capture Element</h1>
-          ${this.photoCapture}
+          ${this.photoDialog}
         </div>
     </div>
     `;

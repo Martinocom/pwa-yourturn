@@ -7,6 +7,9 @@ const cameraSize = css`20px`;
 export class MyActivity extends LitElement {
 
     @property({type: String})
+    id: string = '';
+
+    @property({type: String})
     title: string = 'Title';
 
     @property({type: String})
@@ -514,10 +517,10 @@ export class MyActivity extends LitElement {
                         </div>
                     </div>
 
-                    <div id="right-body" @click=>
+
+                    <div id="right-body" @click="${() => { this.dispatchEvent(new CustomEvent('take-photo', { detail: { id: this.id }})) }}">
                         <label for="upload-photo">
                             <img id="camera" src="assets/icons/camera-64.png" />
-                            <input type="file" name="photo" id="upload-photo" accept="image/*;capture=camera" capture="environment"/>
                         </label>
                     </div>
 

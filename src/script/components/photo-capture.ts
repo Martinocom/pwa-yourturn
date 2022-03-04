@@ -1,59 +1,55 @@
 import { LitElement, css, html } from 'lit';
-import { customElement } from 'lit/decorators.js';
+import { customElement, property } from 'lit/decorators.js';
 
 @customElement('photo-capture')
 export class PhotoCapture extends LitElement {
 
   static get styles() {
     return css`
-    #video {
-        border: 1px solid black;
-        box-shadow: 2px 2px 3px black;
-        width:320px;
-        height:240px;
+      #picture-zone {
+        width: 320px;
+        height: 240px;
       }
 
-      #photo {
-        border: 1px solid black;
-        box-shadow: 2px 2px 3px black;
-        width:320px;
-        height:240px;
+      #video {
+        display: block
+        position: absolute;
       }
 
       #canvas {
-        display:none;
+        display: block;
+        position: absolute;
       }
 
-      .camera {
-        width: 340px;
-        display:inline-block;
+      .gone {
+        display: none;
       }
 
-      .output {
-        width: 340px;
-        display:inline-block;
-        vertical-align: top;
+      .hidden {
+        opacity: 0;
       }
 
-      #startbutton {
-        display:block;
-        position:relative;
-        margin-left:auto;
-        margin-right:auto;
-        bottom:32px;
-        background-color: rgba(0, 150, 0, 0.5);
-        border: 1px solid rgba(255, 255, 255, 0.7);
-        box-shadow: 0px 0px 1px 2px rgba(0, 0, 0, 0.2);
-        font-size: 14px;
-        font-family: "Lucida Grande", "Arial", sans-serif;
-        color: rgba(255, 255, 255, 1.0);
+      #controls {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+        padding: 10px 20px;
       }
 
-      .contentarea {
-        font-size: 16px;
-        font-family: "Lucida Grande", "Arial", sans-serif;
-        width: 760px;
+      #controls > * {
+        background: #333399;
+        corner-radius: 90px;
+        width: 48px;
+        height: 48px;
+        line-height: 48px;
+        text-align: center;
       }
+
+      #controls > *:hover {
+        cursor: pointer;
+        background: #3333BB;
+      }
+
     `;
   }
 
@@ -63,7 +59,12 @@ export class PhotoCapture extends LitElement {
   private stream: MediaStream | null = null
 
 
+  @property({type: Boolean})
   private isStreaming = false;
+
+  @property({type: Boolean})
+  private isLoaded = false;
+
   private videoProperties = {
       width: 320,
       height: 0
@@ -75,6 +76,26 @@ export class PhotoCapture extends LitElement {
   }
 
   async firstUpdated() {
+
+  }
+
+  public async start() {
+    this.activateCaptureDevice()
+  }
+
+  public async stop() {
+    this.deactivateCaptureDevice()
+  }
+
+
+  async activateCaptureDevice() {
+    // Loading
+    this.isLoaded = false
+
+    // Clear preview area
+    this.clearPicture()
+
+    // Get media
     this.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
     if (this.stream != null) {
         this.video.srcObject = this.stream;
@@ -88,20 +109,41 @@ export class PhotoCapture extends LitElement {
                 this.canvas.setAttribute('width', this.videoProperties.width.toString())
                 this.canvas.setAttribute('height', this.videoProperties.height.toString())
                 this.isStreaming = true
+                this.isLoaded = true
             }
         }, false)
     }
-
-    this.clearPicture()
   }
 
-  async takePhoto() {
-    alert("Click")
-    this.takePicture()
+  async clearPicture() {
+    // Get the context and clear area
+    let context = this.canvas.getContext('2d')
+    if (context != null) {
+        context.fillStyle = "#AAA"
+        context.fillRect(0, 0, this.canvas.width, this.canvas.height)
+    }
+    // Save "clear" data
+    let data = this.canvas.toDataURL('image/png')
+    this.photo.setAttribute('src', data);
+    // Hide canvas
+    this.video.classList.remove('gone')
+    this.canvas.classList.add('gone')
+
   }
+
+  async deactivateCaptureDevice() {
+    // Stop every track and reset capture object
+    this.stream?.getTracks().forEach(track => track.stop())
+    this.video.srcObject = null
+    // Show the preview
+    this.canvas.classList.remove('gone')
+    this.video.classList.add('gone')
+    this.isStreaming = false;
+  }
+
+
 
   async takePicture() {
-    alert("Take")
     let context = this.canvas.getContext('2d')
     if (this.videoProperties.width && this.videoProperties.height && context != null) {
         this.canvas.width = this.videoProperties.width;
@@ -116,26 +158,45 @@ export class PhotoCapture extends LitElement {
 
   }
 
-  async clearPicture() {
-    alert("Clear")
-    let context = this.canvas.getContext('2d')
-    if (context != null) {
-        context.fillStyle = "#AAA"
-        context.fillRect(0, 0, this.canvas.width, this.canvas.height)
-    }
 
-    let data = this.canvas.toDataURL('image/png')
-    this.photo.setAttribute('src', data);
+  async onTakePhotoClick() {
+    this.takePicture()
+    this.deactivateCaptureDevice()
   }
+
+  async onRedoPhotoClick() {
+    console.log("redo")
+    this.activateCaptureDevice()
+  }
+
+  async onAcceptPhotoClick() {
+    console.log("accept")
+    this.deactivateCaptureDevice()
+  }
+
+
 
   render() {
     return html`
     <div>
+        <div id="picture-zone">
+          ${this.video}
+          ${this.canvas}
+        </div>
+
+        <div id="controls" class="${this.isLoaded ? "" : "hidden"}">
+          <div id="cancel" class="${this.isStreaming ? "hidden" : ""}" @click=${this.onRedoPhotoClick}>x</div>
+          <div id="take-photo" class="${this.isStreaming ? "" : "hidden"}" @click=${this.onTakePhotoClick}>O</div>
+          <div id="accept" class="${this.isStreaming ? "hidden" : ""}" @click=${this.onAcceptPhotoClick}>v</div>
+        </div>
+
+        <!--
         <div class="camera">
             ${this.video}
             <button id="startbutton" @click=${this.takePhoto}>Take photo</button>
         </div>
-        ${this.canvas}
+  -->
+
     </div>
     `;
   }
