@@ -4,7 +4,7 @@ import { property, customElement } from 'lit/decorators.js';
 @customElement('app-header')
 export class AppHeader extends LitElement {
   @property({ type: String }) title = 'YourTurn';
-  @property({ type: String }) version = 'Camera Dialog';
+  @property({ type: String }) version = 'Final Upgrade';
 
   static get styles() {
     return css`

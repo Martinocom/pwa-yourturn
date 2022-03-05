@@ -4,8 +4,8 @@ export class Activity {
 
     title: string
     image: string
-    checksMarta: Date[]
-    checksMarcin: Date[]
+    checksMarta: number[]
+    checksMarcin: number[]
 
     totalChecks: number
     percentMarcin: number
@@ -14,7 +14,7 @@ export class Activity {
     nextTurnName: string
     lastCheck: LastCheck
 
-    constructor(title: string, image: string, checksMarcin: Date[], checksMarta: Date[]) {
+    constructor(title: string, image: string, checksMarcin: number[], checksMarta: number[]) {
         this.title = title
         this.image = image
 
@@ -29,6 +29,56 @@ export class Activity {
         this.percentMarta = this.countPercent(this.checksMarta)
 
     }
+
+    static fromDoc(doc: any): Activity {
+        return new Activity(
+            doc.data().title,
+            doc.data().image,
+            doc.data().checksMarcin,
+            doc.data().checksMarta
+        )
+    }
+
+
+    public recalculateByNewCheck(base64Photo: string, who: string): Activity {
+        const today = Date.now()
+        this.image = base64Photo
+
+        if (who == "Marcin") {
+            this.checksMarcin.push(today)
+        }
+        else if (who == "Marta") {
+            this.checksMarcin.push(today)
+        }
+        else {
+            throw "You suck"
+        }
+
+        this.refreshData()
+
+
+        if (this.checksMarcin.length == this.checksMarta.length) {
+            // Checks are equal, must recreate the check
+            if (who == "Marcin") {
+                return new Activity(this.title, this.image, [today], [])
+            } else {
+                return new Activity(this.title, this.image, [], [today])
+            }
+        } else {
+            // Checks are not equal, someone must do something again
+            return this
+        }
+    }
+
+    public toFirebaseData(): any {
+        return {
+            title: this.title,
+            image: this.image,
+            checksMarcin: this.checksMarcin,
+            checksMarta: this.checksMarta
+        }
+    }
+
 
     private countTotalChecks(): number {
         var totalChecks = this.checksMarcin.length;
@@ -91,7 +141,7 @@ export class Activity {
 
 
 
-    private countPercent(checks: Date[]): number {
+    private countPercent(checks: number[]): number {
         var percent = 0
 
         if (this.totalChecks > 0) {
@@ -103,6 +153,18 @@ export class Activity {
         }
 
         return percent
+    }
+
+    private refreshData() {
+        this.checksMarcin = this.checksMarcin.sort()
+        this.checksMarta = this.checksMarta.sort()
+        this.totalChecks = this.countTotalChecks()
+
+        this.nextTurnName = this.getNextTurnName()
+        this.lastCheck = this.getLastCheck()
+
+        this.percentMarcin = this.countPercent(this.checksMarcin)
+        this.percentMarta = this.countPercent(this.checksMarta)
     }
 
 }

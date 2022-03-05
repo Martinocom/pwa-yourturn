@@ -1,8 +1,8 @@
 export class LastCheck {
-    date: Date
+    date: number
     name: string
 
-    constructor(date: Date, name: string) {
+    constructor(date: number, name: string) {
         this.date = date
         this.name = name
     }
