@@ -155,7 +155,7 @@ export class PhotoCapture extends LitElement {
 
         this.video.addEventListener('canplay', ev => {
             if (!this.isStreaming) {
-                this.videoProperties.height = this.video.videoHeight / (this.video.videoWidth / this.videoProperties.width)
+                this.videoProperties.height = 240;//this.video.videoHeight / (this.video.videoWidth / this.videoProperties.width)
                 this.video.setAttribute('width', this.videoProperties.width.toString())
                 this.video.setAttribute('height', this.videoProperties.height.toString())
                 this.canvas.setAttribute('width', this.videoProperties.width.toString())
