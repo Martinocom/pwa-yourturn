@@ -6,6 +6,9 @@ import { PhotoCapture } from '../photo-capture'
 @customElement('photo-dialog')
 export class PhotoDialog extends LitElement {
 
+    @property({type: String})
+    activityId: String = ""
+
     @property({type: Boolean})
     private opened: Boolean = false;
     private photoCapture = new PhotoCapture()
@@ -13,14 +16,25 @@ export class PhotoDialog extends LitElement {
     constructor() {
         super()
         this.opened = false
+        this.photoCapture.addEventListener('photo-accept', e => {
+            this.dispatchEvent(new CustomEvent('photo-accept', {
+                detail: {
+                    activityId: this.activityId,
+                    data: e.detail.data
+                }
+            }))
+        })
+        this.photoCapture.addEventListener('photo-cancel', e => {
+            this.dispatchEvent(new CustomEvent('photo-cancel', { detail: { cause: e.detail.cause }}))
+        })
     }
 
-    public open() {
+    public async open() {
         this.opened = true
         this.photoCapture.start()
     }
 
-    public close() {
+    public async close() {
         this.opened = false
         this.photoCapture.stop()
     }
@@ -36,9 +50,17 @@ export class PhotoDialog extends LitElement {
             .dialog {
                 display: flex;
                 flex-direction: column;
-                border: 2px outset black;
-                padding: 1em;
                 margin: 1em;
+                background: #fff;
+                border-radius: 25px;
+                overflow: hidden;
+                outline: none;
+                -webkit-touch-callout: none;
+                -webkit-user-select: none;
+                -khtml-user-select: none;
+                -moz-user-select: none;
+                -ms-user-select: none;
+                user-select: none;
             }
             .buttons {
                 display: flex;
@@ -84,13 +106,15 @@ export class PhotoDialog extends LitElement {
 
     render() {
         return html`
-            <div class="dialog-cover ${this.opened ? 'opened' : 'closed'}"> </div>
+        <div>
+            <div id="dialog-cover" class="dialog-cover ${this.opened ? 'opened' : 'closed'}"></div>
 
             <div class="dialog-container ${this.opened ? 'opened' : 'closed'}">
                 <div class="dialog">
                     ${this.photoCapture}
                 </div>
             </div>
+        </div>
         `
     }
 

@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { getFirestore, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc, getFirestore, collection, getDocs } from "firebase/firestore";
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
@@ -47,6 +47,7 @@ export class AppActivities extends LitElement {
     `;
   }
 
+  mainContainer: HTMLElement | null | undefined = null
   photoCapture = new PhotoCapture()
   photoDialog = new PhotoDialog()
 
@@ -99,6 +100,7 @@ export class AppActivities extends LitElement {
     getDocs(collection(db, "activities"))
     .then(snapshot => {
       var activityHolder = this.shadowRoot?.getElementById("activities-container")
+      this.mainContainer = this.shadowRoot?.getElementById("main-container")
 
       if (activityHolder != null) {
         activityHolder.innerHTML = ""
@@ -132,40 +134,49 @@ export class AppActivities extends LitElement {
       this.enableError();
     });
 
-    this.photoDialog.addEventListener('photo-accept', e => { this.onAccept() })
-    this.photoDialog.addEventListener('photo-cancel', e => { this.onCancel() })
+    this.photoDialog.addEventListener('photo-accept', e => { this.onAccept(e) })
+    this.photoDialog.addEventListener('photo-cancel', e => { this.onCancel(e) })
   }
 
   async onTakePhoto(id: string) {
-    console.log("take")
-    this.photoDialog.id = id
+    this.photoDialog.activityId = id
+    this.mainContainer?.appendChild(this.photoDialog)
     this.photoDialog.open()
   }
 
-  async onAccept() {
-    console.log("accepted")
+  async onAccept(event: any) {
     this.photoDialog.close()
+    this.mainContainer?.removeChild(this.photoDialog)
+    this.elaborateActivity(event.detail.activityId, event.detail.data)
+
   }
 
-  async onCancel() {
-    console.log("cancelled")
+  async onCancel(event: any) {
     this.photoDialog.close()
+    this.mainContainer?.removeChild(this.photoDialog)
+  }
+
+  async elaborateActivity(activityId: string, base64Photo: string) {
+    const db = getFirestore()
+    const docRef = doc(db, "activities", activityId)
+    const docSnap = await getDoc(docRef)
+    if (docSnap.exists()) {
+      const activity = docSnap.data()
+      // checksMarcin checksMarta image title
+
+    }
   }
 
 
   render() {
     return html`
-    <div>
+    <div id="main-container">
       <app-header></app-header>
         <!-- Activities container -->
         <div id="activities-container">
           <!-- Loading Bar -->
           ${this.renderedHtml.loader}
           ${this.renderedHtml.error}
-        </div>
-
-        <div>
-          ${this.photoDialog}
         </div>
     </div>
     `;

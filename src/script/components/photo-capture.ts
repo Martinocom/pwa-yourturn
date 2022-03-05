@@ -12,11 +12,15 @@ export class PhotoCapture extends LitElement {
       }
 
       #video {
+        width: 320px;
+        height: 240px;
         display: block
         position: absolute;
       }
 
       #canvas {
+        width: 320px;
+        height: 240px;
         display: block;
         position: absolute;
       }
@@ -29,6 +33,20 @@ export class PhotoCapture extends LitElement {
         opacity: 0;
       }
 
+      #close {
+        display: block;
+        position: relative;
+        left: 265px;
+        bottom: 230px;
+        border-radius: 25px;
+        width: 38px;
+        height: 38px;
+        line-height: 38px;
+        text-align: center;
+        z-index: 10;
+        cursor: pointer;
+      }
+
       #controls {
         display: flex;
         flex-direction: row;
@@ -37,19 +55,53 @@ export class PhotoCapture extends LitElement {
       }
 
       #controls > * {
-        background: #333399;
-        corner-radius: 90px;
+        background: var(--app-color-primary);
+        border-radius: 25px;
         width: 48px;
         height: 48px;
         line-height: 48px;
         text-align: center;
       }
 
-      #controls > *:hover {
+      #controls :not(.hidden) > *:hover {
         cursor: pointer;
-        background: #3333BB;
+        background: var(--app-color-primary-light);
       }
 
+      #take-photo, #cancel, #accept {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+      }
+
+      #take-photo > * {
+        border: 2px solid white;
+        border-radius: 25px;
+        width: 30px;
+        height: 30px;
+      }
+
+      #cancel, #accept, #close {
+        font-weight: 600;
+        color: white;
+        font-size: 1em;
+      }
+
+      #cancel, #close {
+        background: #DD1111;
+      }
+
+      #cancel:hover, #close:hover {
+        background: #BB1111;
+      }
+
+      #accept {
+        background: #11DD11;
+      }
+
+      #accept:hover {
+        background: #11BB11;
+      }
     `;
   }
 
@@ -160,18 +212,28 @@ export class PhotoCapture extends LitElement {
 
 
   async onTakePhotoClick() {
-    this.takePicture()
-    this.deactivateCaptureDevice()
+    if (this.isStreaming) {
+      this.takePicture()
+      this.deactivateCaptureDevice()
+    }
   }
 
   async onRedoPhotoClick() {
-    console.log("redo")
-    this.activateCaptureDevice()
+    if (!this.isStreaming) {
+      this.activateCaptureDevice()
+    }
   }
 
   async onAcceptPhotoClick() {
-    console.log("accept")
+    if (!this.isStreaming) {
+      this.deactivateCaptureDevice()
+      this.dispatchEvent(new CustomEvent('photo-accept', { detail: { data: this.canvas.toDataURL('image/jpeg', 0.6) }}))
+    }
+  }
+
+  async onCloseClick() {
     this.deactivateCaptureDevice()
+    this.dispatchEvent(new CustomEvent('photo-cancel', { detail: { cause: "close" }}))
   }
 
 
@@ -182,21 +244,16 @@ export class PhotoCapture extends LitElement {
         <div id="picture-zone">
           ${this.video}
           ${this.canvas}
+          <div id="close" @click=${this.onCloseClick}>x</div>
         </div>
 
         <div id="controls" class="${this.isLoaded ? "" : "hidden"}">
           <div id="cancel" class="${this.isStreaming ? "hidden" : ""}" @click=${this.onRedoPhotoClick}>x</div>
-          <div id="take-photo" class="${this.isStreaming ? "" : "hidden"}" @click=${this.onTakePhotoClick}>O</div>
+          <div id="take-photo" class="${this.isStreaming ? "" : "hidden"}" @click=${this.onTakePhotoClick}>
+            <div></div>
+          </div>
           <div id="accept" class="${this.isStreaming ? "hidden" : ""}" @click=${this.onAcceptPhotoClick}>v</div>
         </div>
-
-        <!--
-        <div class="camera">
-            ${this.video}
-            <button id="startbutton" @click=${this.takePhoto}>Take photo</button>
-        </div>
-  -->
-
     </div>
     `;
   }
