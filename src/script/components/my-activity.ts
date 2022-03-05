@@ -43,11 +43,8 @@ export class MyActivity extends LitElement {
                 this.style.setProperty("--full-color", this.getMainColorFromAvg())
             };
 
-            console.log(this.activity.percentMarta)
-            console.log((100 - this.activity.percentMarta))
-
             // TODO remove?
-            this.requestUpdate();
+            //this.requestUpdate();
         } else {
             this.image.id = "image";
             this.image.src = "";
@@ -140,6 +137,38 @@ export class MyActivity extends LitElement {
         rgb.g = ~~(rgb.g/count);
         rgb.b = ~~(rgb.b/count);
 
+        const increment = 15;
+        if (rgb.r < 100) {
+            rgb.r += increment
+        }
+        if (rgb.g < 100) {
+            rgb.g += increment
+        }
+        if (rgb.b < 100) {
+            rgb.b += increment
+        }
+
+        if (rgb.r > rgb.g && rgb.r > rgb.b) {
+            // Red dominant
+            if (rgb.r + increment <= 250) {
+                rgb.r += increment
+            }
+        }
+
+        else if (rgb.g > rgb.r && rgb.r > rgb.b) {
+            // Green dominant
+            if (rgb.g + increment <= 250) {
+                rgb.g += increment
+            }
+        }
+
+        else {
+            // Blue dominant
+            if (rgb.b + increment <= 250) {
+                rgb.b += increment
+            }
+        }
+
         return rgb;
     }
 
@@ -169,9 +198,9 @@ export class MyActivity extends LitElement {
                 box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.07), 0 2px 3px 0 rgba(0, 0, 0, 0.15);
                 min-width: 330px;
                 max-width: var(--app-card-max-size);
-                min-height: 200px;
-                height: 200px;
-                max-height: 200px;
+                min-height: 210px;
+                height: 210px;
+                max-height: 210px;
                 background: var(--background);
                 overflow: hidden;
                 outline: none;
@@ -388,11 +417,11 @@ export class MyActivity extends LitElement {
 
                 <div id=body>
                     <div id="left-body">
-                        <h1>${this.title}</h1>
+                        <h1>${this.activity.title}</h1>
 
                         <div id="users">
                             <div class="user">
-                                <div class="name">Maricn</div>
+                                <div class="name">Marcin</div>
                                 <div class="progress" style="background: linear-gradient(90deg,
                                     var(--accent-color) 0%,
                                     var(--accent-color) ${this.activity.percentMarcin}%,

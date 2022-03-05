@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { customElement } from 'lit/decorators.js';
-import { doc, getDoc, setDoc, getFirestore, collection, getDocs } from "firebase/firestore";
+import { doc, getDoc, setDoc, getFirestore, collection, getDocsFromServer } from "firebase/firestore";
 import { getAuth } from "firebase/auth";
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
@@ -95,21 +95,22 @@ export class AppActivities extends LitElement {
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
-    this.refresh()
+    this.mainContainer = this.shadowRoot?.getElementById("main-container")
     this.photoDialog.addEventListener('photo-accept', e => { this.onAccept(e) })
     this.photoDialog.addEventListener('photo-cancel', e => { this.onCancel(e) })
+    this.refresh()
   }
 
   private async refresh() {
     const db = getFirestore()
     this.enableLoading()
 
-    getDocs(collection(db, "activities"))
+    getDocsFromServer(collection(db, "activities"))
     .then(snapshot => {
-      var activityHolder = this.shadowRoot?.getElementById("activities-container")
-      this.mainContainer = this.shadowRoot?.getElementById("main-container")
+      const activityHolder = this.shadowRoot?.getElementById("activities-container")
 
       if (activityHolder != null) {
+        while (activityHolder.firstChild) activityHolder.removeChild(activityHolder.firstChild)
         activityHolder.innerHTML = ""
 
         snapshot.forEach((doc) => {
@@ -162,8 +163,8 @@ export class AppActivities extends LitElement {
   async onAccept(event: any) {
     this.photoDialog.close()
     this.mainContainer?.removeChild(this.photoDialog)
-    this.elaborateActivity(event.detail.activityId, event.detail.data)
-    this.refresh()
+    await this.elaborateActivity(event.detail.activityId, event.detail.data)
+    await this.refresh()
   }
 
   async onCancel(event: any) {
