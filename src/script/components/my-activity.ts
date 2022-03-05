@@ -1,5 +1,6 @@
 import { LitElement, html, css } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
+import { Activity } from '../model/activity';
 
 const cameraSize = css`20px`;
 
@@ -7,16 +8,10 @@ const cameraSize = css`20px`;
 export class MyActivity extends LitElement {
 
     @property({type: String})
-    title: string = 'Title';
+    id: string = '';
 
-    @property({type: String})
-    imageBase64: string = 'src';
-
-    @property({type: Array})
-    checksMarcin: Date[] = [];
-
-    @property({type: Array})
-    checksMarta: Date[]= [];
+    @property({ type: Activity })
+    activity!: Activity;
 
     @property({type: Boolean})
     isLoadingModeEnabled: boolean = false;
@@ -27,13 +22,6 @@ export class MyActivity extends LitElement {
     private fillImage = new Image()
     private filePicker: HTMLInputElement | null | undefined = null;
 
-    private totalChecks = 0;
-    private percentMarcin = 0;
-    private percentMarta = 0;
-
-    nextTurnName: string = ""
-    lastCheckDate: any = {}
-
 
     constructor() {
         super()
@@ -43,11 +31,9 @@ export class MyActivity extends LitElement {
         if (!this.isLoadingModeEnabled) {
             // Set variables
             this.image.id = "image";
-            this.image.src = "data:image/png;base64," + this.imageBase64;
+            this.image.src = this.activity.image
             this.fillImage.id = "fill-image";
             this.fillImage.src = this.image.src;
-            this.nextTurnName = this.getNextTurnName();
-            this.lastCheckDate = this.getLastCheckDate();
 
             // Set the dominant color
             this.image.onload= (_) => {
@@ -57,121 +43,18 @@ export class MyActivity extends LitElement {
                 this.style.setProperty("--full-color", this.getMainColorFromAvg())
             };
 
-            // Ordering all dates and set total checks
-            if (this.checksMarcin != null && this.checksMarcin != undefined) {
-                this.checksMarcin = this.checksMarcin.sort()
-                this.totalChecks = this.checksMarcin.length;
-            }
-            if (this.checksMarta != null && this.checksMarta != undefined) {
-                this.checksMarta = this.checksMarta.sort()
-                if (this.totalChecks < this.checksMarta.length) {
-                    this.totalChecks = this.checksMarta.length;
-                }
-            }
-
-            if (this.totalChecks > 0) {
-                if (this.checksMarcin != null && this.checksMarcin != undefined) {
-                    if (this.totalChecks == this.checksMarcin.length) {
-                        this.percentMarcin = 100;
-                    } else {
-                        this.percentMarcin = Math.trunc((100 * this.checksMarcin.length) / this.totalChecks);
-                    }
-                } else {
-                    this.percentMarcin = 0;
-                }
-
-                if (this.checksMarta != null && this.checksMarta != undefined) {
-                    if (this.totalChecks == this.checksMarta.length) {
-                        this.percentMarta = 100;
-                    } else {
-                        this.percentMarta = Math.trunc((100 * this.checksMarta.length) / this.totalChecks);
-                    }
-                } else {
-                    this.percentMarta = 0;
-                }
-
-            } else {
-                this.percentMarcin = 0;
-                this.percentMarta = 0;
-            }
-
-            this.requestUpdate();
+            // TODO remove?
+            //this.requestUpdate();
         } else {
             this.image.id = "image";
             this.image.src = "";
             this.fillImage.id = "fill-image";
             this.fillImage.src = "";
-            this.nextTurnName = "";
-            this.lastCheckDate = "";
             this.dominantRGB = this.getAverageRGB(this.image);
             this.style.setProperty("--background", "#FEFEFE")
             this.style.setProperty("--accent-color", "#F1F1F1")
             this.style.setProperty("--full-color", "#EDEDED")
         }
-    }
-
-    getNextTurnName(): string {
-        if (this.checksMarcin.length > this.checksMarta.length) {
-            return "Marta"
-        }
-        if (this.checksMarcin.length < this.checksMarta.length) {
-            return "Marcin"
-        }
-        if (this.checksMarcin.length == 0) {
-            return "Marcin"
-        }
-        if (this.checksMarta.length == 0) {
-            return "Marta"
-        }
-
-        return "Sto cazzo"
-    }
-
-    getLastCheckDate(): any {
-        var maxDateMarcin = null;
-        var maxDateMarta = null;
-
-        if (this.checksMarcin != null && this.checksMarcin.length > 0) {
-            maxDateMarcin = this.checksMarcin[this.checksMarcin.length-1];
-        }
-        if (this.checksMarta != null && this.checksMarta.length > 0) {
-            maxDateMarta = this.checksMarta[this.checksMarta.length-1];
-        }
-
-        if (maxDateMarcin != null && maxDateMarta != null) {
-            if (maxDateMarcin >= maxDateMarta) {
-                return {
-                    date: maxDateMarcin,
-                    who: "Marcin"
-                }
-            } else {
-                return {
-                    date: maxDateMarta,
-                    who: "Marta"
-                }
-            }
-        } else {
-            if (maxDateMarcin != null) {
-                return {
-                    date: maxDateMarcin,
-                    who: "Marcin"
-                }
-            } else if (maxDateMarta != null) {
-                return {
-                    date: maxDateMarta,
-                    who: "Marcin"
-                }
-            } else {
-                return {
-                    date: null,
-                    who: null
-                }
-            }
-        }
-    }
-
-    async onTakePhotoClick() {
-
     }
 
     async onFileChoosen() {
@@ -194,7 +77,7 @@ export class MyActivity extends LitElement {
 
     private timeConverter(timestamp: any){
         if (timestamp != null && timestamp != undefined) {
-            var a = new Date(timestamp.seconds * 1000)
+            var a = new Date(timestamp * 1000)
             var months = ['01','02','03','04','05','06','07','08','09','10','11','12'];
             var year = a.getFullYear()
             var month = months[a.getMonth()]
@@ -254,6 +137,38 @@ export class MyActivity extends LitElement {
         rgb.g = ~~(rgb.g/count);
         rgb.b = ~~(rgb.b/count);
 
+        const increment = 15;
+        if (rgb.r < 100) {
+            rgb.r += increment
+        }
+        if (rgb.g < 100) {
+            rgb.g += increment
+        }
+        if (rgb.b < 100) {
+            rgb.b += increment
+        }
+
+        if (rgb.r > rgb.g && rgb.r > rgb.b) {
+            // Red dominant
+            if (rgb.r + increment <= 250) {
+                rgb.r += increment
+            }
+        }
+
+        else if (rgb.g > rgb.r && rgb.r > rgb.b) {
+            // Green dominant
+            if (rgb.g + increment <= 250) {
+                rgb.g += increment
+            }
+        }
+
+        else {
+            // Blue dominant
+            if (rgb.b + increment <= 250) {
+                rgb.b += increment
+            }
+        }
+
         return rgb;
     }
 
@@ -283,9 +198,9 @@ export class MyActivity extends LitElement {
                 box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.07), 0 2px 3px 0 rgba(0, 0, 0, 0.15);
                 min-width: 330px;
                 max-width: var(--app-card-max-size);
-                min-height: 200px;
-                height: 200px;
-                max-height: 200px;
+                min-height: 210px;
+                height: 210px;
+                max-height: 210px;
                 background: var(--background);
                 overflow: hidden;
                 outline: none;
@@ -298,9 +213,9 @@ export class MyActivity extends LitElement {
             }
 
             #top {
-                min-height: 100px;
-                height: 100px;
-                max-height: 100px;
+                min-height: 110px;
+                height: 110px;
+                max-height: 110px;
                 width: 100%;
                 position: relative;
                 overflow: hidden;
@@ -309,6 +224,12 @@ export class MyActivity extends LitElement {
 
             #image-blur {
                 z-index: 0;
+            }
+
+            #image {
+                position: relative;
+                top: -45px;
+                max-height: 200px;
             }
 
             #fill-image {
@@ -426,8 +347,7 @@ export class MyActivity extends LitElement {
 
 
             #right-body {
-                background: linear-gradient(135deg, var(--accent-color), var(--full-color));"
-                //background: var(--full-color);
+                background: var(--full-color);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -490,34 +410,44 @@ export class MyActivity extends LitElement {
                     </div>
 
                     <div id="tags">
-                        <div class="tag">${this.lastCheckDate.who + " - " + this.timeConverter(this.lastCheckDate.date)}</div>
-                        <div class="tag next">➥ ${this.nextTurnName}</div>
+                        <div class="tag">${this.activity.lastCheck.name + " - " + this.timeConverter(this.activity.lastCheck.date)}</div>
+                        <div class="tag next">➥ ${this.activity.nextTurnName}</div>
                     </div>
                 </div>
 
                 <div id=body>
                     <div id="left-body">
-                        <h1>${this.title}</h1>
+                        <h1>${this.activity.title}</h1>
 
                         <div id="users">
                             <div class="user">
-                                <div class="name">Maricn</div>
-                                <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.percentMarcin}%, transparent ${100 - this.percentMarcin}%);" ></div>
-                                <div class="counter">${this.checksMarcin.length}</div>
+                                <div class="name">Marcin</div>
+                                <div class="progress" style="background: linear-gradient(90deg,
+                                    var(--accent-color) 0%,
+                                    var(--accent-color) ${this.activity.percentMarcin}%,
+                                    transparent ${this.activity.percentMarcin}%,
+                                    transparent ${100 - this.activity.percentMarcin}%)" >
+                                </div>
+                                <div class="counter">${this.activity.checksMarcin.length}</div>
                             </div>
 
                             <div class="user">
                                 <div class="name">Marta</div>
-                                <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.percentMarta}%, transparent ${100 - this.percentMarta}%);" ></div>
-                                <div class="counter">${this.checksMarta.length}</div>
+                                <div class="progress" style="background: linear-gradient(90deg,
+                                    var(--accent-color) 0%,
+                                    var(--accent-color) ${this.activity.percentMarta}%,
+                                    transparent ${this.activity.percentMarta}%,
+                                    transparent ${100 - this.activity.percentMarta}%)" >
+                                </div>
+                                <div class="counter">${this.activity.checksMarta.length}</div>
                             </div>
                         </div>
                     </div>
 
-                    <div id="right-body" @click=>
+
+                    <div id="right-body" @click="${() => { this.dispatchEvent(new CustomEvent('take-photo', { detail: { id: this.id }})) }}">
                         <label for="upload-photo">
                             <img id="camera" src="assets/icons/camera-64.png" />
-                            <input type="file" name="photo" id="upload-photo" accept="image/*;capture=camera" capture="environment"/>
                         </label>
                     </div>
 
