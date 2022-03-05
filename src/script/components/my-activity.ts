@@ -43,6 +43,9 @@ export class MyActivity extends LitElement {
                 this.style.setProperty("--full-color", this.getMainColorFromAvg())
             };
 
+            console.log(this.activity.percentMarta)
+            console.log((100 - this.activity.percentMarta))
+
             // TODO remove?
             this.requestUpdate();
         } else {
@@ -390,13 +393,23 @@ export class MyActivity extends LitElement {
                         <div id="users">
                             <div class="user">
                                 <div class="name">Maricn</div>
-                                <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.activity.percentMarcin}%, transparent ${100 - this.activity.percentMarcin}%);" ></div>
+                                <div class="progress" style="background: linear-gradient(90deg,
+                                    var(--accent-color) 0%,
+                                    var(--accent-color) ${this.activity.percentMarcin}%,
+                                    transparent ${this.activity.percentMarcin}%,
+                                    transparent ${100 - this.activity.percentMarcin}%)" >
+                                </div>
                                 <div class="counter">${this.activity.checksMarcin.length}</div>
                             </div>
 
                             <div class="user">
                                 <div class="name">Marta</div>
-                                <div class="progress" style="background: linear-gradient(90deg, var(--accent-color) ${this.activity.percentMarta}%, transparent ${100 - this.activity.percentMarta}%);" ></div>
+                                <div class="progress" style="background: linear-gradient(90deg,
+                                    var(--accent-color) 0%,
+                                    var(--accent-color) ${this.activity.percentMarta}%,
+                                    transparent ${this.activity.percentMarta}%,
+                                    transparent ${100 - this.activity.percentMarta}%)" >
+                                </div>
                                 <div class="counter">${this.activity.checksMarta.length}</div>
                             </div>
                         </div>
