@@ -47,6 +47,25 @@ export class PhotoCapture extends LitElement {
         cursor: pointer;
       }
 
+      #rotate {
+        display: block;
+        position: relative;
+        left: 15px;
+        bottom: 268px;
+        border-radius: 25px;
+        width: 38px;
+        height: 38px;
+        line-height: 38px;
+        text-align: center;
+        z-index: 10;
+        cursor: pointer;
+        background: var(--app-color-primary);
+      }
+
+      #rotate:hover {
+        background: var(--app-color-primary-light);
+      }
+
       #controls {
         display: flex;
         flex-direction: row;
@@ -81,7 +100,7 @@ export class PhotoCapture extends LitElement {
         height: 30px;
       }
 
-      #cancel, #accept, #close {
+      #cancel, #accept, #close, #rotate {
         font-weight: 600;
         color: white;
         font-size: 1em;
@@ -117,10 +136,19 @@ export class PhotoCapture extends LitElement {
   @property({type: Boolean})
   private isLoaded = false;
 
-  private videoProperties = {
-      width: 320,
-      height: 0
-  }
+  @property({type: Boolean})
+  private isRotating = false;
+
+
+  private constraints = {
+    audio: false,
+    video: {
+      width: { min: 320, max: 320 },
+      height: { min: 240, max: 240},
+      facingMode: "environment"
+    },
+  };
+
 
   constructor() {
     super();
@@ -148,18 +176,17 @@ export class PhotoCapture extends LitElement {
     this.clearPicture()
 
     // Get media
-    this.stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false })
+    this.stream = await navigator.mediaDevices.getUserMedia(this.constraints)
     if (this.stream != null) {
         this.video.srcObject = this.stream;
         this.video.play();
 
         this.video.addEventListener('canplay', ev => {
             if (!this.isStreaming) {
-                this.videoProperties.height = 240;//this.video.videoHeight / (this.video.videoWidth / this.videoProperties.width)
-                this.video.setAttribute('width', this.videoProperties.width.toString())
-                this.video.setAttribute('height', this.videoProperties.height.toString())
-                this.canvas.setAttribute('width', this.videoProperties.width.toString())
-                this.canvas.setAttribute('height', this.videoProperties.height.toString())
+                this.video.setAttribute('width', this.constraints.video.width.min.toString())
+                this.video.setAttribute('height', this.constraints.video.height.min.toString())
+                this.canvas.setAttribute('width', this.constraints.video.width.min.toString())
+                this.canvas.setAttribute('height', this.constraints.video.height.min.toString())
                 this.isStreaming = true
                 this.isLoaded = true
             }
@@ -197,10 +224,10 @@ export class PhotoCapture extends LitElement {
 
   async takePicture() {
     let context = this.canvas.getContext('2d')
-    if (this.videoProperties.width && this.videoProperties.height && context != null) {
-        this.canvas.width = this.videoProperties.width;
-        this.canvas.height = this.videoProperties.height;
-        context.drawImage(this.video, 0, 0, this.videoProperties.width, this.videoProperties.height)
+    if (this.constraints.video.width.min && this.constraints.video.height.min && context != null) {
+        this.canvas.width = this.constraints.video.width.min;
+        this.canvas.height = this.constraints.video.height.min;
+        context.drawImage(this.video, 0, 0, this.constraints.video.width.min, this.constraints.video.height.min)
 
         let data = this.canvas.toDataURL('image/png')
         this.photo.setAttribute('src', data);
@@ -236,6 +263,17 @@ export class PhotoCapture extends LitElement {
     this.dispatchEvent(new CustomEvent('photo-cancel', { detail: { cause: "close" }}))
   }
 
+  async onRotateClick() {
+    this.isRotating = true
+    if (this.constraints.video.facingMode == "user") {
+      this.constraints.video.facingMode = "environment"
+    } else {
+      this.constraints.video.facingMode = "user"
+    }
+    await this.deactivateCaptureDevice()
+    await this.activateCaptureDevice()
+    this.isRotating = false
+  }
 
 
   render() {
@@ -245,6 +283,7 @@ export class PhotoCapture extends LitElement {
           ${this.video}
           ${this.canvas}
           <div id="close" @click=${this.onCloseClick}>x</div>
+          <div id="rotate" class="${this.isRotating || !this.isStreaming ? "hidden" : ""}" @click=${this.onRotateClick}>⭯</div>
         </div>
 
         <div id="controls" class="${this.isLoaded ? "" : "hidden"}">

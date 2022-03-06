@@ -48,7 +48,7 @@ export class Activity {
             this.checksMarcin.push(today)
         }
         else if (who == "Marta") {
-            this.checksMarcin.push(today)
+            this.checksMarta.push(today)
         }
         else {
             throw "You suck"
