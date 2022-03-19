@@ -24,16 +24,16 @@ export class AppActivities extends LitElement {
         display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        justify-content: flex-start;
+        justify-content: center;
         align-items: center;
         width: 100%;
       }
 
       #activities-container > *  {
-        max-width: var(--app-card-max-size);
+        //max-width: var(--app-card-max-size);
         margin: var(--app-margin-small);
         margin-top: 0px;
-        flex: 1;
+        //flex: 1;
       }
 
       #activities-container > *:first-child {
@@ -43,7 +43,6 @@ export class AppActivities extends LitElement {
       @media only screen and (min-width: 724px) {
         #activities-container > * {
           margin-top: var(--app-margin-small);
-          margin-bottom: 0px;
         }
       }
     `;
