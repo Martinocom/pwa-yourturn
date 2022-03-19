@@ -30,19 +30,25 @@ export class AppActivities extends LitElement {
       }
 
       #activities-container > *  {
-        //max-width: var(--app-card-max-size);
         margin: var(--app-margin-small);
         margin-top: 0px;
-        //flex: 1;
+        flex: 1;
       }
 
       #activities-container > *:first-child {
         margin-top: var(--app-margin-small);
       }
 
-      @media only screen and (min-width: 724px) {
+      @media only screen and (max-width: 899px) {
+        #activities-container > * {
+          max-width: var(--app-card-max-size);
+        }
+      }
+
+      @media only screen and (min-width: 900px) {
         #activities-container > * {
           margin-top: var(--app-margin-small);
+          flex: 0;
         }
       }
     `;

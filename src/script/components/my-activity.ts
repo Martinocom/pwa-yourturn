@@ -198,9 +198,7 @@ export class MyActivity extends LitElement {
                 box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.07), 0 2px 3px 0 rgba(0, 0, 0, 0.15);
                 min-width: 330px;
                 max-width: var(--app-card-max-size);
-                min-height: 210px;
                 height: 210px;
-                max-height: 210px;
                 background: var(--background);
                 overflow: hidden;
                 outline: none;
