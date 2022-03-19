@@ -45,11 +45,11 @@ export class AppLogin extends LitElement {
         line-height: 38px;
         text-align: center;
         color: white;
-        cursor: pointer;
       }
 
-      #login-button:hover {
+      #login-button.clickable:hover {
         background: var(--app-color-primary-light);
+        cursor: pointer;
       }
 
       .gone {
@@ -61,11 +61,17 @@ export class AppLogin extends LitElement {
 
   constructor() {
     super();
+    if (window.location.hash.indexOf("redirecting") >= 0) {
+      this.isLogginIn = true
+    } else {
+      this.isLogginIn = false
+    }
   }
 
   async googleLoginClick() {
     if (this.isLogginIn == false) {
       this.isLogginIn = true
+      window.location.hash = "redirecting"
       const auth = getAuth()
       const provider = new GoogleAuthProvider();
       auth.languageCode = 'it'
@@ -109,6 +115,11 @@ export class AppLogin extends LitElement {
   async firstUpdated() {
     // this method is a lifecycle even in lit
     // for more info check out the lit docs https://lit.dev/docs/components/lifecycle/
+    if (window.location.hash.indexOf("redirecting") >= 0) {
+      this.isLogginIn = true
+    } else {
+      this.isLogginIn = false
+    }
   }
 
 
@@ -123,7 +134,7 @@ export class AppLogin extends LitElement {
                     Cool! But I need to know who you are. And I know you have a Google Account, aren't you?
                 </p>
 
-                <div id="login-button" @click="${this.googleLoginClick}">
+                <div id="login-button" class="${this.isLogginIn ? "" : "clickable"}" @click="${this.googleLoginClick}">
                   <span class="${this.isLogginIn ? "gone" : ""}">Google Login</span>
                   <fluent-progress-ring class="${this.isLogginIn ? "" : "gone"}"></fluent-progress-ring>
                 </button>

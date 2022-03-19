@@ -78,12 +78,10 @@ export class AppIndex extends LitElement {
     // Monitoring login state
     onAuthStateChanged(auth, (user) => {
       if (user) {
-        console.log("Hell yeah, you are authenticated!")
         if (window.location.href.indexOf("/activities") < 0) {
           Router.go('/activities')
         }
       } else {
-        console.log("You're not logged in dude!")
         Router.go('/login')
       }
     });

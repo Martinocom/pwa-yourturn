@@ -5,7 +5,7 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 @customElement('app-header')
 export class AppHeader extends LitElement {
   @property({ type: String }) title = 'YourTurn';
-  @property({ type: String }) version = 'MartaFix';
+  @property({ type: String }) version = 'mmmoooooo';
 
   static get styles() {
     return css`
