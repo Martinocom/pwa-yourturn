@@ -1,11 +1,11 @@
 import { LitElement, css, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+import { getAuth } from "firebase/auth";
 
 @customElement('app-header')
 export class AppHeader extends LitElement {
   @property({ type: String }) title = 'YourTurn';
-  @property({ type: String }) version = 'mmmoooooo';
+  @property({ type: String }) version = 'lag-remove';
 
   static get styles() {
     return css`

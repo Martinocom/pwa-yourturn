@@ -398,13 +398,13 @@ export class MyActivity extends LitElement {
     render() {
         return html`
             <div id="card" class="card">
-                <div id="top">
+                <!--<div id="top">
                     <div id="image-blur">
-                        <!--${this.fillImage}-->
+                        ${this.fillImage}
                     </div>
 
                     <div id="image-container">
-                        <!--${this.image}-->
+                        ${this.image}
                     </div>
 
                     <div id="tags">
@@ -449,7 +449,7 @@ export class MyActivity extends LitElement {
                         </label>
                     </div>
 
-                </div>
+                </div>-->
             </div>
         `
     }
