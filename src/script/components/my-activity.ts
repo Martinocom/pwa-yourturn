@@ -400,11 +400,11 @@ export class MyActivity extends LitElement {
             <div id="card" class="card">
                 <div id="top">
                     <div id="image-blur">
-                        ${this.fillImage}
+                        <!--${this.fillImage}-->
                     </div>
 
                     <div id="image-container">
-                        ${this.image}
+                        <!--${this.image}-->
                     </div>
 
                     <div id="tags">
