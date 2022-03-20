@@ -133,71 +133,26 @@ export class MyActivity extends LitElement {
                 filter: blur(8px);
             }
 
-            #image-container {
-                position: absolute;
-                top: 0;
-                left: 50%;
-                -webkit-transform: translateX(-50%);
-                transform: translateX(-50%)
-                z-index: 10;
-            }
-
-            #tags {
-                position: absolute;
-                top: 0;
-                left: 0;
-                right: 0;
-                z-index: 20;
+            /*
+            #photo-bar {
                 display: flex;
                 flex-flow: row;
                 justify-content: space-between;
-                align-items: flex-start;
-                flex: 1;
-            }
+                background: var(--app-color-black);
+                color: var(--app-color-white);
+                padding: 0.5em var(--margin-horizontal);
+                font-size: 0.9em;
+                margin: 0;
+                margin-top: -0.3em;
+                font-weight: 100;
+            }*/
+
 
             .tag {
                 display: flex;
-                justify-content: center;
-                align-items: center;
-                background: rgba(0, 0, 0, 0.5);
-                border-radius: 0px 15px;
-                padding: 4px 20px;
-                font-size: 0.8em;
-                color: white;
-            }
-
-            .tag.next {
-                padding: 5px 20px;
-                background: rgba(100, 14, 17, 0.8);
-                border-radius: 15px 0px;
-                font-size: 1em;
-            }
-
-            #title {
-                position: absolute;
-                bottom: 0;
-                left: 0;
-                z-index: 20;
-                background: rgba(0, 0, 0, 0.85);
-                border-radius: 0px 15px 0px 0px;
-                padding: 5px 20px;
-                color: white;
-            }
-
-
-            /* ------------------------------------------ */
-            /* BODY */
-            #body {
-                width: 100%;
-                height: 100%;
-                display: flex;
-                flex-flow: row;
-                flex: 1;
-            }
-
-            #left-body {
-                padding: 15px 20px;
-                flex: 1;
+                flex-direction: row;
+                justify-content: space-between;
+                padding: 1.2em;
             }
 
             h1 {
@@ -208,9 +163,16 @@ export class MyActivity extends LitElement {
                 font-variant: small-caps;
             }
 
+            #photo-details {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                font-size: 0.9em;
+                font-weight: 100;
+                text-align: right;
+            }
 
-            .user {
-                margin-bottom: 5px;
+            #bottom {
                 display: flex;
                 justify-content: space-between;
                 align-items: baseline;
@@ -306,17 +268,26 @@ export class MyActivity extends LitElement {
                         ${this.fillImage}
                     </div>
 
-                    <div id="image-container">
-                        ${this.image}
+                    <!--
+                    <div id="photo-bar">
+                        <div>${this.activity.lastCheck.name}</div>
+                        <div>${TimeConverter.fromEpoch(this.activity.lastCheck.date)}</div>
                     </div>
+                    -->
+                </div>
 
-                    <div id="tags">
-                        <div class="tag next">➥ ${this.activity.nextTurnName}</div>
-                        <div class="tag">${this.activity.lastCheck.name + " - " + this.timeConverter(this.activity.lastCheck.date)}</div>
+                <div id="body">
+                    <h1>${this.activity.title}</h1>
+                    <div id="photo-details">
+                        <div>${this.activity.lastCheck.name}</div>
+                        <div>${TimeConverter.fromEpoch(this.activity.lastCheck.date)}</div>
                     </div>
+                </div>
 
-                    <div id="title">
-                        <h1>${this.activity.title}</h1>
+                <div id="bottom">
+                    <div class="stat ${this.activity.nextTurnName == "Marcin" ? "green" : "red"}" id="stat-marcin">
+                        <span class="number">${this.activity.checksMarcin.length}</span>
+                        <span class="name">Marcin</span>
                     </div>
                 </div>
 
@@ -337,11 +308,9 @@ export class MyActivity extends LitElement {
                         </div>
                     </div>
 
-
-                    <div id="right-body" @click="${() => { this.dispatchEvent(new CustomEvent('take-photo', { detail: { id: this.id }})) }}">
-                        <label for="upload-photo">
-                            <img id="camera" src="assets/icons/camera-64.png" />
-                        </label>
+                    <div class="stat ${this.activity.nextTurnName == "Marta" ? "green" : "red"}" id="stat-marta">
+                        <span class="number">${this.activity.checksMarta.length}</span>
+                        <span class="name">Marta</span>
                     </div>
 
                 </div>
