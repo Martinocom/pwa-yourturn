@@ -16,8 +16,6 @@ export class MyActivity extends LitElement {
     @property({type: Boolean})
     isLoadingModeEnabled: boolean = false;
 
-
-    private dominantRGB: any;
     private image = new Image()
     private fillImage = new Image()
     private filePicker: HTMLInputElement | null | undefined = null;
@@ -35,25 +33,11 @@ export class MyActivity extends LitElement {
             this.fillImage.id = "fill-image";
             this.fillImage.src = this.image.src;
 
-            // Set the dominant color
-            this.image.onload= (_) => {
-                this.dominantRGB = this.getAverageRGB(this.image);
-                this.style.setProperty("--background", this.getBackgroundFromAvg())
-                this.style.setProperty("--accent-color", this.getAccentFromAvg())
-                this.style.setProperty("--full-color", this.getMainColorFromAvg())
-            };
-
-            // TODO remove?
-            //this.requestUpdate();
         } else {
             this.image.id = "image";
             this.image.src = "";
             this.fillImage.id = "fill-image";
             this.fillImage.src = "";
-            this.dominantRGB = this.getAverageRGB(this.image);
-            this.style.setProperty("--background", "#FEFEFE")
-            this.style.setProperty("--accent-color", "#F1F1F1")
-            this.style.setProperty("--full-color", "#EDEDED")
         }
     }
 
@@ -96,94 +80,6 @@ export class MyActivity extends LitElement {
         }
     }
 
-    private getAverageRGB(imgEl: any) {
-
-        var blockSize = 5, // only visit every 5 pixels
-            defaultRGB = {r:150,g:150,b:200}, // for non-supporting envs
-            canvas = document.createElement('canvas'),
-            context = canvas.getContext && canvas.getContext('2d'),
-            data, width, height,
-            i = -4,
-            length,
-            rgb = {r:0,g:0,b:0},
-            count = 0;
-
-        if (!context) {
-            return defaultRGB;
-        }
-
-        height = canvas.height = imgEl.naturalHeight || imgEl.offsetHeight || imgEl.height;
-        width = canvas.width = imgEl.naturalWidth || imgEl.offsetWidth || imgEl.width;
-
-        context.drawImage(imgEl, 0, 0);
-
-        try {
-            data = context.getImageData(0, 0, width, height);
-        } catch(e) {
-            return defaultRGB;
-        }
-
-        length = data.data.length;
-
-        while ( (i += blockSize * 4) < length ) {
-            ++count;
-            rgb.r += data.data[i];
-            rgb.g += data.data[i+1];
-            rgb.b += data.data[i+2];
-        }
-
-        // ~~ used to floor values
-        rgb.r = ~~(rgb.r/count);
-        rgb.g = ~~(rgb.g/count);
-        rgb.b = ~~(rgb.b/count);
-
-        const increment = 15;
-        if (rgb.r < 100) {
-            rgb.r += increment
-        }
-        if (rgb.g < 100) {
-            rgb.g += increment
-        }
-        if (rgb.b < 100) {
-            rgb.b += increment
-        }
-
-        if (rgb.r > rgb.g && rgb.r > rgb.b) {
-            // Red dominant
-            if (rgb.r + increment <= 250) {
-                rgb.r += increment
-            }
-        }
-
-        else if (rgb.g > rgb.r && rgb.r > rgb.b) {
-            // Green dominant
-            if (rgb.g + increment <= 250) {
-                rgb.g += increment
-            }
-        }
-
-        else {
-            // Blue dominant
-            if (rgb.b + increment <= 250) {
-                rgb.b += increment
-            }
-        }
-
-        return rgb;
-    }
-
-    private getMainColorFromAvg(): string {
-        return 'rgba(' + [Math.trunc(this.dominantRGB.r), Math.trunc(this.dominantRGB.g), Math.trunc(this.dominantRGB.b)].join(',') + ', 1)'
-    }
-
-    private getBackgroundFromAvg(): string {
-        return 'rgba(' + [Math.trunc(this.dominantRGB.r), Math.trunc(this.dominantRGB.g), Math.trunc(this.dominantRGB.b)].join(',') + ', 0.1)'
-    }
-
-    private getAccentFromAvg(): string {
-        return 'rgba(' + [Math.trunc(this.dominantRGB.r), Math.trunc(this.dominantRGB.g), Math.trunc(this.dominantRGB.b)].join(',') + ', 0.5)'
-    }
-
 
 
     static get styles() {
@@ -198,8 +94,7 @@ export class MyActivity extends LitElement {
                 box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.07), 0 2px 3px 0 rgba(0, 0, 0, 0.15);
                 min-width: 330px;
                 max-width: var(--app-card-max-size);
-                height: 210px;
-                background: var(--background);
+                background: #F5F5F5;
                 overflow: hidden;
                 outline: none;
                 -webkit-touch-callout: none;
@@ -248,7 +143,6 @@ export class MyActivity extends LitElement {
             }
 
             #tags {
-                padding: 15px;
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -257,6 +151,7 @@ export class MyActivity extends LitElement {
                 display: flex;
                 flex-flow: row;
                 justify-content: space-between;
+                align-items: flex-start;
                 flex: 1;
             }
 
@@ -264,15 +159,29 @@ export class MyActivity extends LitElement {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                background: rgba(0, 0, 0, 0.7);
-                border-radius: 15px;
-                padding: 5px 15px;
-                font-size: 0.9em;
+                background: rgba(0, 0, 0, 0.5);
+                border-radius: 0px 15px;
+                padding: 4px 20px;
+                font-size: 0.8em;
                 color: white;
             }
 
             .tag.next {
-                background: rgba(14, 38, 17, 0.8);
+                padding: 5px 20px;
+                background: rgba(100, 14, 17, 0.8);
+                border-radius: 15px 0px;
+                font-size: 1em;
+            }
+
+            #title {
+                position: absolute;
+                bottom: 0;
+                left: 0;
+                z-index: 20;
+                background: rgba(0, 0, 0, 0.85);
+                border-radius: 0px 15px 0px 0px;
+                padding: 5px 20px;
+                color: white;
             }
 
 
@@ -287,65 +196,59 @@ export class MyActivity extends LitElement {
             }
 
             #left-body {
-                padding: 15px;
+                padding: 15px 20px;
                 flex: 1;
             }
 
             h1 {
                 margin: 0;
                 padding: 0;
-                font-size: 1.2em;
+                font-size: 1.3em;
+                font-weight: normal;
+                font-variant: small-caps;
             }
 
-            #users {
-                margin-top: 10px;
-            }
 
             .user {
-                margin-bottom: 3px;
+                margin-bottom: 5px;
                 display: flex;
                 justify-content: space-between;
                 align-items: baseline;
                 flex-flow: row;
                 width: 100%;
+                border: 1px solid #494848;
+                border-radius: 15px;
+            }
+
+            .user:last-child {
+                margin-bottom: 0px;
+            }
+
+            .number, .name {
+                color: white;
+                font-size: 0.9em;
+                margin-top: 3px;
+                margin-bottom: 3px;
+                text-shadow:
+                1px 1px 0 #494848,
+                -1px -1px 0 #494848,
+                1px -1px 0 #494848,
+                -1px 1px 0 #494848,
+                1px 1px 0 #494848;
+            }
+
+
+            .number {
+                margin-left: 15px;
+                margin-right: 15px;
             }
 
             .name {
-                width: 50px;
-                min-width: 50px;
-                max-width: 50px;
-                color: #000000;
-                text-align: right;
-                margin-right: 10px;
+                font-size: 1em;
             }
-
-            .progress {
-                flex: 1;
-                border-radius: 15px;
-                height: 10px;
-                width: 100%;
-                border: 1px solid var(--accent-color);
-                box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                -ms-box-sizing: border-box;
-                -webkit-box-sizing: border-box;
-            }
-
-
-            .counter {
-                display: flex;
-                justify-content: right;
-                align-items: center;
-                width: 25px;
-                min-width: 25px;
-                max-width: 25px;
-                font-size: 0.9em;
-                color: var(--full-color);
-            }
-
 
             #right-body {
-                background: var(--full-color);
+                background: var(--app-color-primary);
                 display: flex;
                 justify-content: center;
                 align-items: center;
@@ -408,36 +311,28 @@ export class MyActivity extends LitElement {
                     </div>
 
                     <div id="tags">
-                        <div class="tag">${this.activity.lastCheck.name + " - " + this.timeConverter(this.activity.lastCheck.date)}</div>
                         <div class="tag next">➥ ${this.activity.nextTurnName}</div>
+                        <div class="tag">${this.activity.lastCheck.name + " - " + this.timeConverter(this.activity.lastCheck.date)}</div>
+                    </div>
+
+                    <div id="title">
+                        <h1>${this.activity.title}</h1>
                     </div>
                 </div>
 
                 <div id=body>
                     <div id="left-body">
-                        <h1>${this.activity.title}</h1>
-
                         <div id="users">
-                            <div class="user">
+                            <div class="user" style="${this.activity.percentMarcin == 100 ? 'background: rgba(14, 38, 17, 0.8);' : 'background: linear-gradient(90deg, rgba(100, 14, 17, 0.8) 0%, rgba(100, 14, 17, 0.8)' + this.activity.percentMarcin + '%, #494848 ' + this.activity.percentMarcin + '%, #494848 ' + (100 - this.activity.percentMarcin) + '%);'}">
+                                <div class="number">${this.activity.checksMarcin.length}</div>
                                 <div class="name">Marcin</div>
-                                <div class="progress" style="background: linear-gradient(90deg,
-                                    var(--accent-color) 0%,
-                                    var(--accent-color) ${this.activity.percentMarcin}%,
-                                    transparent ${this.activity.percentMarcin}%,
-                                    transparent ${100 - this.activity.percentMarcin}%)" >
-                                </div>
-                                <div class="counter">${this.activity.checksMarcin.length}</div>
+                                <div class="number">${this.activity.totalChecks}</div>
                             </div>
 
-                            <div class="user">
+                            <div class="user" style="${this.activity.percentMarta == 100 ? 'background: rgba(14, 38, 17, 0.8);' : 'background: linear-gradient(90deg, rgba(100, 14, 17, 0.8) 0%, rgba(100, 14, 17, 0.8)' + this.activity.percentMarta + '%, #494848 ' + this.activity.percentMarta + '%, #494848 ' + (100 - this.activity.percentMarta) + '%);'}">
+                                <div class="number">${this.activity.checksMarta.length}</div>
                                 <div class="name">Marta</div>
-                                <div class="progress" style="background: linear-gradient(90deg,
-                                    var(--accent-color) 0%,
-                                    var(--accent-color) ${this.activity.percentMarta}%,
-                                    transparent ${this.activity.percentMarta}%,
-                                    transparent ${100 - this.activity.percentMarta}%)" >
-                                </div>
-                                <div class="counter">${this.activity.checksMarta.length}</div>
+                                <div class="number">${this.activity.totalChecks}</div>
                             </div>
                         </div>
                     </div>

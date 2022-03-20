@@ -31,12 +31,8 @@ export class AppActivities extends LitElement {
 
       #activities-container > *  {
         margin: var(--app-margin-small);
-        margin-top: 0px;
-        flex: 1;
-      }
-
-      #activities-container > *:first-child {
         margin-top: var(--app-margin-small);
+        flex: 1;
       }
 
       @media only screen and (max-width: 899px) {
@@ -47,7 +43,7 @@ export class AppActivities extends LitElement {
 
       @media only screen and (min-width: 900px) {
         #activities-container > * {
-          margin-top: var(--app-margin-small);
+          min-width: 400px;
           flex: 0;
         }
       }
