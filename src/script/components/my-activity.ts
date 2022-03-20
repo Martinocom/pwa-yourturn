@@ -54,20 +54,6 @@ export class MyActivity extends LitElement {
                 margin: 0;
             }
 
-            /*
-            #photo-bar {
-                display: flex;
-                flex-flow: row;
-                justify-content: space-between;
-                background: var(--app-color-black);
-                color: var(--app-color-white);
-                padding: 0.5em var(--margin-horizontal);
-                font-size: 0.9em;
-                margin: 0;
-                margin-top: -0.3em;
-                font-weight: 100;
-            }*/
-
 
             #body {
                 display: flex;
@@ -89,7 +75,6 @@ export class MyActivity extends LitElement {
                 flex-direction: column;
                 justify-content: flex-end;
                 font-size: 0.9em;
-                font-weight: 100;
                 text-align: right;
             }
 
@@ -109,7 +94,7 @@ export class MyActivity extends LitElement {
                 text-align: center;
                 padding-top: 0.5em;
                 padding-bottom: 0.5em;
-                min-width: 150px;
+                min-width: 120px;
             }
 
             .clickable {
@@ -119,8 +104,9 @@ export class MyActivity extends LitElement {
                 align-items: center;
                 cursor: pointer;
                 background: var(--app-color-primary);
-                min-width: 80px;
-                width: 80px;
+                flex-grow: 0;
+                min-width: 90px;
+                width: 90px;
             }
 
             .clickable:hover {
@@ -149,7 +135,6 @@ export class MyActivity extends LitElement {
             .name {
                 font-size: 1.1em;
                 font-variant: small-caps;
-                font-weight: 100;
             }
 
             .date {
@@ -166,13 +151,6 @@ export class MyActivity extends LitElement {
             <div id="card" class="card">
                 <div id="top">
                     <img id="image" src='${this.activity.image}'/>
-
-                    <!--
-                    <div id="photo-bar">
-                        <div>${this.activity.lastCheck.name}</div>
-                        <div>${TimeConverter.fromEpoch(this.activity.lastCheck.date)}</div>
-                    </div>
-                    -->
                 </div>
 
                 <div id="body">
