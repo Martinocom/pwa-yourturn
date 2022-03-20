@@ -1,3 +1,4 @@
+import { TimeConverter } from "../utils/time-converter"
 import { LastCheck } from "./last-check"
 
 export class Activity {
@@ -153,6 +154,26 @@ export class Activity {
         }
 
         return percent
+    }
+
+    public getLastCheckOf(who: string): string {
+        if (who == "Marta") {
+            if (this.checksMarta.length > 0) {
+                return TimeConverter.fromEpoch(this.checksMarta[this.checksMarta.length-1])
+            } else {
+                return "-"
+            }
+        }
+
+        if (who == "Marcin") {
+            if (this.checksMarcin.length > 0) {
+                return TimeConverter.fromEpoch(this.checksMarcin[this.checksMarcin.length-1])
+            } else {
+                return "-"
+            }
+        }
+
+        return "-"
     }
 
     private refreshData() {
