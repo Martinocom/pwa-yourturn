@@ -109,6 +109,7 @@ export class MyActivity extends LitElement {
                 text-align: center;
                 padding-top: 0.5em;
                 padding-bottom: 0.5em;
+                min-width: 150px;
             }
 
             .clickable {
@@ -118,6 +119,8 @@ export class MyActivity extends LitElement {
                 align-items: center;
                 cursor: pointer;
                 background: var(--app-color-primary);
+                min-width: 80px;
+                width: 80px;
             }
 
             .clickable:hover {
@@ -139,13 +142,20 @@ export class MyActivity extends LitElement {
             }
 
             .number {
-                font-size: 1.5em;
+                font-size: 1.6em;
+                font-weight: bold;
             }
 
             .name {
-                font-size: 1em;
+                font-size: 1.1em;
                 font-variant: small-caps;
                 font-weight: 100;
+            }
+
+            .date {
+                font-size: 0.7em;
+                font-weight: 100;
+                margin-top: -1px;
             }
         `;
     }
@@ -177,6 +187,7 @@ export class MyActivity extends LitElement {
                     <div class="stat ${this.activity.nextTurnName == "Marcin" ? "green" : "red"}" id="stat-marcin">
                         <span class="number">${this.activity.checksMarcin.length}</span>
                         <span class="name">Marcin</span>
+                        <span class="date">(${this.activity.getLastCheckOf("Marcin")})</span>
                     </div>
 
                     <div class="stat clickable" id="stat-camera" @click="${() => { this.dispatchEvent(new CustomEvent('take-photo', { detail: { id: this.id }})) }}">
@@ -186,6 +197,7 @@ export class MyActivity extends LitElement {
                     <div class="stat ${this.activity.nextTurnName == "Marta" ? "green" : "red"}" id="stat-marta">
                         <span class="number">${this.activity.checksMarta.length}</span>
                         <span class="name">Marta</span>
+                        <span class="date">(${this.activity.getLastCheckOf("Marta")})</span>
                     </div>
                 </div>
             </div>
