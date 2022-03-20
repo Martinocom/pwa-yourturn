@@ -172,6 +172,15 @@ export class MyActivity extends LitElement {
                 text-align: right;
             }
 
+            #photo-details {
+                display: flex;
+                flex-direction: column;
+                justify-content: flex-end;
+                font-size: 0.9em;
+                font-weight: 100;
+                text-align: right;
+            }
+
             #bottom {
                 display: flex;
                 justify-content: space-between;
