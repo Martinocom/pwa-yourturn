@@ -160,20 +160,16 @@ export class Activity {
         if (who == "Marta") {
             if (this.checksMarta.length > 0) {
                 return TimeConverter.fromEpoch(this.checksMarta[this.checksMarta.length-1])
-            } else {
-                return "-"
             }
         }
 
         if (who == "Marcin") {
             if (this.checksMarcin.length > 0) {
                 return TimeConverter.fromEpoch(this.checksMarcin[this.checksMarcin.length-1])
-            } else {
-                return "-"
             }
         }
 
-        return "-"
+        return "             -             "
     }
 
     private refreshData() {

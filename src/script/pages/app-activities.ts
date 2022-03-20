@@ -35,15 +35,9 @@ export class AppActivities extends LitElement {
         flex: 1;
       }
 
-      @media only screen and (max-width: 899px) {
+      @media only screen and (min-width: 881px) {
         #activities-container > * {
-          max-width: var(--app-card-max-size);
-        }
-      }
-
-      @media only screen and (min-width: 900px) {
-        #activities-container > * {
-          min-width: 400px;
+          min-width: var(--app-max-card-width);
           flex: 0;
         }
       }
