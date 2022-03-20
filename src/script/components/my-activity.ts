@@ -198,7 +198,6 @@ export class MyActivity extends LitElement {
                 box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.07), 0 2px 3px 0 rgba(0, 0, 0, 0.15);
                 min-width: 330px;
                 max-width: var(--app-card-max-size);
-                height: 210px;
                 background: var(--background);
                 overflow: hidden;
                 outline: none;
@@ -248,7 +247,6 @@ export class MyActivity extends LitElement {
             }
 
             #tags {
-                padding: 15px;
                 position: absolute;
                 top: 0;
                 left: 0;
@@ -257,6 +255,7 @@ export class MyActivity extends LitElement {
                 display: flex;
                 flex-flow: row;
                 justify-content: space-between;
+                align-items: flex-start;
                 flex: 1;
             }
 
@@ -264,15 +263,19 @@ export class MyActivity extends LitElement {
                 display: flex;
                 justify-content: center;
                 align-items: center;
-                background: rgba(0, 0, 0, 0.7);
-                border-radius: 15px;
-                padding: 5px 15px;
-                font-size: 0.9em;
+                background: rgba(0, 0, 0, 0.6);
+                border-radius: 0px 15px;
+                padding: 4px 20px;
+                font-size: 0.8em;
                 color: white;
             }
 
             .tag.next {
+                padding: 5px 20px;
                 background: rgba(14, 38, 17, 0.8);
+                border-radius: 15px 0px;
+                font-weight: bold;
+                font-size: 1em;
             }
 
 
@@ -302,47 +305,38 @@ export class MyActivity extends LitElement {
             }
 
             .user {
-                margin-bottom: 3px;
+                margin-bottom: 5px;
                 display: flex;
                 justify-content: space-between;
                 align-items: baseline;
                 flex-flow: row;
                 width: 100%;
+                border: 1px solid #494848;
+                border-radius: 15px;
+            }
+
+            .number, .name {
+                color: white;
+                font-size: 0.9em;
+                margin-top: 3px;
+                margin-bottom: 3px;
+                text-shadow:
+                1px 1px 0 #494848,
+                -1px -1px 0 #494848,
+                1px -1px 0 #494848,
+                -1px 1px 0 #494848,
+                1px 1px 0 #494848;
+            }
+
+
+            .number {
+                margin-left: 15px;
+                margin-right: 15px;
             }
 
             .name {
-                width: 50px;
-                min-width: 50px;
-                max-width: 50px;
-                color: #000000;
-                text-align: right;
-                margin-right: 10px;
+                font-size: 1em;
             }
-
-            .progress {
-                flex: 1;
-                border-radius: 15px;
-                height: 10px;
-                width: 100%;
-                border: 1px solid var(--accent-color);
-                box-sizing: border-box;
-                -moz-box-sizing: border-box;
-                -ms-box-sizing: border-box;
-                -webkit-box-sizing: border-box;
-            }
-
-
-            .counter {
-                display: flex;
-                justify-content: right;
-                align-items: center;
-                width: 25px;
-                min-width: 25px;
-                max-width: 25px;
-                font-size: 0.9em;
-                color: var(--full-color);
-            }
-
 
             #right-body {
                 background: var(--full-color);
@@ -408,8 +402,8 @@ export class MyActivity extends LitElement {
                     </div>
 
                     <div id="tags">
-                        <div class="tag">${this.activity.lastCheck.name + " - " + this.timeConverter(this.activity.lastCheck.date)}</div>
                         <div class="tag next">➥ ${this.activity.nextTurnName}</div>
+                        <div class="tag">${this.activity.lastCheck.name + " - " + this.timeConverter(this.activity.lastCheck.date)}</div>
                     </div>
                 </div>
 
@@ -418,26 +412,28 @@ export class MyActivity extends LitElement {
                         <h1>${this.activity.title}</h1>
 
                         <div id="users">
-                            <div class="user">
+                            <div
+                            class="user"
+                            style="background: linear-gradient(90deg,
+                                var(--accent-color) 0%,
+                                var(--accent-color) ${this.activity.percentMarcin}%,
+                                #494848 ${this.activity.percentMarcin}%,
+                                #494848 ${100 - this.activity.percentMarcin}%)">
+                                <div class="number">${this.activity.checksMarcin.length}</div>
                                 <div class="name">Marcin</div>
-                                <div class="progress" style="background: linear-gradient(90deg,
-                                    var(--accent-color) 0%,
-                                    var(--accent-color) ${this.activity.percentMarcin}%,
-                                    transparent ${this.activity.percentMarcin}%,
-                                    transparent ${100 - this.activity.percentMarcin}%)" >
-                                </div>
-                                <div class="counter">${this.activity.checksMarcin.length}</div>
+                                <div class="number">${this.activity.totalChecks}</div>
                             </div>
 
-                            <div class="user">
+                            <div
+                            class="user"
+                            style="background: linear-gradient(90deg,
+                                var(--accent-color) 0%,
+                                var(--accent-color) ${this.activity.percentMarta}%,
+                                #494848 ${this.activity.percentMarta}%,
+                                #494848 ${100 - this.activity.percentMarta}%)">
+                                <div class="number">${this.activity.checksMarta.length}</div>
                                 <div class="name">Marta</div>
-                                <div class="progress" style="background: linear-gradient(90deg,
-                                    var(--accent-color) 0%,
-                                    var(--accent-color) ${this.activity.percentMarta}%,
-                                    transparent ${this.activity.percentMarta}%,
-                                    transparent ${100 - this.activity.percentMarta}%)" >
-                                </div>
-                                <div class="counter">${this.activity.checksMarta.length}</div>
+                                <div class="number">${this.activity.totalChecks}</div>
                             </div>
                         </div>
                     </div>
