@@ -25,6 +25,21 @@ export class MyActivity extends LitElement {
         this.image.src = this.activity.image
     }
 
+    async switchContent(elementName: string) {
+        const element = this.shadowRoot?.getElementById(elementName)
+        if (element != null) {
+            if (element.classList.contains("name")) {
+                element.classList.remove("name")
+                element.classList.add("date")
+                element.innerHTML = elementName.indexOf("marcin") >= 0 ? this.activity.getLastCheckOf("Marcin") : this.activity.getLastCheckOf("Marta")
+            } else {
+                element.classList.remove("date")
+                element.classList.add("name")
+                element.innerHTML = elementName.indexOf("marcin") >= 0 ? "Marcin" : "Marta"
+            }
+        }
+    }
+
     static get styles() {
         return css`
             .card {
@@ -76,6 +91,8 @@ export class MyActivity extends LitElement {
                 justify-content: flex-end;
                 font-size: 0.9em;
                 text-align: right;
+                color: #444444;
+                font-style: italic;
             }
 
             #bottom {
@@ -89,7 +106,7 @@ export class MyActivity extends LitElement {
                 flex-direction: column;
                 justify-content: center;
                 color: var(--app-color-white);
-                flex-grow: 1;
+                flex: 1;
                 min-height: var(--app-button-height);
                 text-align: center;
                 padding-top: 0.5em;
@@ -105,6 +122,7 @@ export class MyActivity extends LitElement {
                 cursor: pointer;
                 background: var(--app-color-primary);
                 flex-grow: 0;
+                flex-shrink: 1;
                 min-width: 90px;
                 width: 90px;
             }
@@ -138,9 +156,9 @@ export class MyActivity extends LitElement {
             }
 
             .date {
-                font-size: 0.7em;
-                font-weight: 100;
-                margin-top: -1px;
+                font-size: 0.9em;
+                font-variant: small-caps;
+                margin-top: 4px;
             }
         `;
     }
@@ -162,20 +180,20 @@ export class MyActivity extends LitElement {
                 </div>
 
                 <div id="bottom">
-                    <div class="stat ${this.activity.nextTurnName == "Marcin" ? "green" : "red"}" id="stat-marcin">
+                    <div class="stat ${this.activity.nextTurnName == "Marcin" ? "green" : "red"}" id="stat-marcin" @click="${ () => {this.switchContent("marcinName")} }">
                         <span class="number">${this.activity.checksMarcin.length}</span>
-                        <span class="name">Marcin</span>
-                        <span class="date">(${this.activity.getLastCheckOf("Marcin")})</span>
+                        <span class="name" id="marcinName">Marcin</span>
+                        <!--<span class="date">(${this.activity.getLastCheckOf("Marcin")})</span>-->
                     </div>
 
                     <div class="stat clickable" id="stat-camera" @click="${() => { this.dispatchEvent(new CustomEvent('take-photo', { detail: { id: this.id }})) }}">
                         <img id="camera" src="assets/icons/camera-32.png" />
                     </div>
 
-                    <div class="stat ${this.activity.nextTurnName == "Marta" ? "green" : "red"}" id="stat-marta">
+                    <div class="stat ${this.activity.nextTurnName == "Marta" ? "green" : "red"}" id="stat-marta" @click="${ () => {this.switchContent("martaName")} }">
                         <span class="number">${this.activity.checksMarta.length}</span>
-                        <span class="name">Marta</span>
-                        <span class="date">(${this.activity.getLastCheckOf("Marta")})</span>
+                        <span class="name" id="martaName">Marta</span>
+                        <!--<span class="date">(${this.activity.getLastCheckOf("Marta")})</span>
                     </div>
                 </div>
             </div>

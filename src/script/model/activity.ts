@@ -169,7 +169,7 @@ export class Activity {
             }
         }
 
-        return "             -             "
+        return "-"
     }
 
     private refreshData() {
