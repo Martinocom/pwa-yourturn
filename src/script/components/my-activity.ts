@@ -26,11 +26,8 @@ export class MyActivity extends LitElement {
     }
 
     async switchContent(elementName: string) {
-        console.log(elementName)
         const element = this.shadowRoot?.getElementById(elementName)
-        console.log(element)
         if (element != null) {
-
             if (element.classList.contains("name")) {
                 element.classList.remove("name")
                 element.classList.add("date")
