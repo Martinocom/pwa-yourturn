@@ -11,7 +11,7 @@ html {
   --app-color-primary: #2196F3;
   --app-color-primary-light: #2196F3;
   --app-color-primary-clicked: #50abf5;
-  --app-color-red: #D45B75;
+  --app-color-red: #E01A4F;
   --app-color-green: #67CF73;
   --app-color-white: #FDF7FA;
   --app-color-black: #1E2019;
@@ -20,13 +20,13 @@ html {
 
   --app-margin-big: 32px;
   --app-margin-small: 16px;
-  --app-border-radius-big: 25px;
-  --app-border-radius-small: 15px;
+  --app-border-radius-big: 15px;
+  --app-border-radius-small: 7px;
 
   --app-button-height: 40px;
 
   --app-small-screen-width: 690px;
-  --app-min-card-width: 280px;
+  --app-min-card-width: 260px;
   --app-max-card-width: 400px;
 }
 

@@ -1,7 +1,8 @@
-import { LitElement, html, css } from 'lit';
+import { LitElement, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { Activity } from '../model/activity';
 import { TimeConverter } from '../utils/time-converter';
+import { modernCardStyle } from './styles/modern-card.style';
 
 @customElement('my-activity')
 export class MyActivity extends LitElement {
@@ -20,9 +21,35 @@ export class MyActivity extends LitElement {
 
     async firstUpdated() {
         this.image.id = "image";
-        this.style.setProperty("--image-height", "150px")
-        this.style.setProperty("--margin-horizontal", "1em")
         this.image.src = this.activity.image
+        const cardRef = this.shadowRoot?.getElementById('card')
+        const smallBtnRef = this.shadowRoot?.getElementById('btn-small');
+        const bigBtnRef = this.shadowRoot?.getElementById('btn-big');
+
+        if (cardRef) {
+            setTimeout(() => {
+                if (cardRef.offsetWidth <= 325) {
+                    smallBtnRef?.classList?.remove("hidden")
+                    bigBtnRef?.classList?.add("hidden")
+                } else {
+                    smallBtnRef?.classList?.add("hidden")
+                    bigBtnRef?.classList?.remove("hidden")
+                }
+            }, 100);
+
+
+            window.addEventListener('resize', (_) => {
+                console.log(cardRef.offsetWidth)
+                if (cardRef.offsetWidth <= 325) {
+                    smallBtnRef?.classList?.remove("hidden")
+                    bigBtnRef?.classList?.add("hidden")
+                } else {
+                    smallBtnRef?.classList?.add("hidden")
+                    bigBtnRef?.classList?.remove("hidden")
+                }
+            })
+        }
+
     }
 
     async switchContent(elementName: string) {
@@ -41,131 +68,55 @@ export class MyActivity extends LitElement {
     }
 
     static get styles() {
-        return css`
-            .card {
-                display: flex;
-                flex-flow: column;
-                border-radius: var(--app-border-radius-big);
-                box-shadow: var(--app-shadow);
-                min-width: var(--app-min-card-width);
-                background: var(--app-color-white);
-                overflow: hidden;
-                box-sizing: border-box;
-                outline: none;
-                -webkit-touch-callout: none;
-                -webkit-user-select: none;
-                -khtml-user-select: none;
-                -moz-user-select: none;
-                -ms-user-select: none;
-                user-select: none;
-            }
-
-            #image {
-                min-height: var(--image-height);
-                height: var(--image-height);
-                max-height: var(--image-height);
-                object-fit: cover;
-                width: 100%;
-                margin: 0;
-            }
-
-
-            #body {
-                display: flex;
-                flex-direction: row;
-                justify-content: space-between;
-                padding: 1.2em;
-            }
-
-            h1 {
-                font-size: 1.6em;
-                color: var(--app-color-black);
-                font-weight: bold;
-                margin: 0;
-                padding: 0;
-            }
-
-            #photo-details {
-                display: flex;
-                flex-direction: column;
-                justify-content: flex-end;
-                font-size: 0.9em;
-                text-align: right;
-                color: #444444;
-                font-style: italic;
-            }
-
-            #bottom {
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-            }
-
-            .stat {
-                display: flex;
-                flex-direction: column;
-                justify-content: center;
-                color: var(--app-color-white);
-                flex: 1;
-                min-height: var(--app-button-height);
-                text-align: center;
-                padding-top: 0.5em;
-                padding-bottom: 0.5em;
-                min-width: 120px;
-            }
-
-            .clickable {
-                display: flex;
-                flex-direction: row;
-                justify-content: center;
-                align-items: center;
-                cursor: pointer;
-                background: var(--app-color-primary);
-                flex-grow: 0;
-                flex-shrink: 1;
-                min-width: 90px;
-                width: 90px;
-            }
-
-            .clickable:hover {
-                cursor: pointer;
-                background: var(--app-color-primary-clicked);
-            }
-
-            #camera {
-                width: 32px;
-                height: 32px;
-            }
-
-            .red {
-                background: var(--app-color-green);
-            }
-
-            .green {
-                background: var(--app-color-red);
-            }
-
-            .number {
-                font-size: 1.6em;
-                font-weight: bold;
-            }
-
-            .name {
-                font-size: 1.1em;
-                font-variant: small-caps;
-            }
-
-            .date {
-                font-size: 0.9em;
-                font-variant: small-caps;
-                margin-top: 4px;
-            }
-        `;
+        //return defaultStyle();
+        return modernCardStyle();
     }
 
 
     render() {
-        return html`
+        return html `
+            <div class="card" id="card">
+                <div class="image-container">
+                    <img id="image" src='${this.activity.image}'/>
+
+                    <div class="badge-container">
+                        <div class="badge">
+                            ${this.activity.lastCheck.name}
+                        </div>
+
+                        <div class="badge">
+                            ${TimeConverter.fromEpoch(this.activity.lastCheck.date, 'both')}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="content">
+                    <div class="content-details">
+                        <div class="content-title">
+                            <h1>${this.activity.title}</h1>
+                            <div id="btn-small" class="clickable small hidden" @click="${() => { this.dispatchEvent(new CustomEvent('take-photo', { detail: { id: this.id }})) }}">
+                                <img class="camera" src="assets/icons/camera-32.png" />
+                            </div>
+                        </div>
+                        <div class="content-badge-container">
+                            <div class="badge">
+                                <div class="badge-number ${this.activity.nextTurnName == "Marcin" ? "red" : ""}">${this.activity.checksMarcin.length}</div>
+                                <div class="badge-text ${this.activity.nextTurnName == "Marcin" ? "red" : ""}">Marcin</div>
+                            </div>
+                            <div class="badge">
+                                <div class="badge-number  ${this.activity.nextTurnName == "Marta" ? "red" : ""}">${this.activity.checksMarta.length}</div>
+                                <div class="badge-text ${this.activity.nextTurnName == "Marta" ? "red" : ""}">Marta</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div id="btn-big" class="clickable big hidden" @click="${() => { this.dispatchEvent(new CustomEvent('take-photo', { detail: { id: this.id }})) }}">
+                        <img class="camera" src="assets/icons/camera-32.png" />
+                    </div>
+                </div>
+            </div>
+        `;
+        /*return html`
             <div id="card" class="card">
                 <div id="top">
                     <img id="image" src='${this.activity.image}'/>
@@ -197,7 +148,7 @@ export class MyActivity extends LitElement {
                     </div>
                 </div>
             </div>
-        `
+        `*/
     }
 }
 
