@@ -5,7 +5,7 @@ import { getAuth } from "firebase/auth";
 @customElement('app-header')
 export class AppHeader extends LitElement {
   @property({ type: String }) title = 'YourTurn';
-  @property({ type: String }) version = 'date fix';
+  @property({ type: String }) version = 'restyle';
 
   static get styles() {
     return css`
@@ -93,7 +93,7 @@ export class AppHeader extends LitElement {
       return html`
         <header>
             <h1>${this.title}</h1>
-            <div id="logout" @click="${this.onLogoutClick}">🐄</div>
+            <div id="logout" @click="${this.onLogoutClick}">🐖</div>
         </header>
       `;
     } else {
@@ -104,7 +104,7 @@ export class AppHeader extends LitElement {
               <h5>(${this.version})</h5>
             </div>
 
-            <div id="logout" @click="${this.onLogoutClick}">🐄</div>
+            <div id="logout" @click="${this.onLogoutClick}">🐖</div>
         </header>
       `;
     }
