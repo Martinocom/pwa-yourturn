@@ -55,6 +55,10 @@ return css`
     background: #1E2019BB;
 }
 
+.badge.red {
+    background: rgb(55 0 15 / 90%)
+}
+
 .badge-icon, .badge-content {
     height: ${badgeHeight};
     line-height: ${badgeHeight};

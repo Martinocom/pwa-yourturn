@@ -31,7 +31,7 @@ export class MyActivity extends LitElement {
     }
 
     isRedEnabled(name: string) {
-        return this.activity.nextTurnName == name && this.activity.nextTurnName == this.currentUser;
+        return this.activity.nextTurnName == name
     }
 
     static get styles() {
@@ -46,12 +46,12 @@ export class MyActivity extends LitElement {
                     <img id="image" src='${this.activity.image}'/>
 
                     <div class="badge-container">
-                        <div class="badge">
+                        <div class="badge ${this.isRedEnabled('Marcin') ? 'red' : ''}">
                             <div class='badge-icon ${this.isRedEnabled('Marcin') ? 'red' : ''}'>${this.activity.checksMarcin.length}</div>
                             <div class='badge-content'>Marcin</div>
                         </div>
 
-                        <div class="badge">
+                        <div class="badge ${this.isRedEnabled('Marta') ? 'red' : ''}">
                             <div class='badge-icon ${this.isRedEnabled('Marta') ? 'red' : ''}'>${this.activity.checksMarta.length}</div>
                             <div class='badge-content'>Marta</div>
                         </div>
