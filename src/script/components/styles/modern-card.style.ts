@@ -93,6 +93,7 @@ return css`
     margin-right: 1.2em;
     align-content: center;
     align-items: center;
+    justify-content: space-between;
 }
 
 h1, h2 {
@@ -110,18 +111,8 @@ h2 {
     font-weight: 300;
 }
 
-.actions {
-    display: flex;
-    flex-direction: row;
-    flex-grow: 1;
-    justify-content: flex-end;
-}
-
 .action {
-    display: flex;
-    align-content: center;
-    align-items: center;
-    justify-content: center;
+    position: relative;
     border-radius: 100%;
     box-sizing: border-box;
     background: var(--app-color-primary);
@@ -132,6 +123,12 @@ h2 {
 }
 
 .action-photo {
+    position: absolute;
+    margin: auto;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
     max-width: ${photoSize};
     max-height: ${photoSize};
     width: ${photoSize};

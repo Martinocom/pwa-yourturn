@@ -43,8 +43,7 @@ export class MyActivity extends LitElement {
         return html `
             <div class="card" id="card">
                 <div class="image-container">
-                    <div style="height: 8em"></div>
-                    <!--<img id="image" src='${this.activity.image}'/>-->
+                    <img id="image" src='${this.activity.image}'/>
 
                     <div class="badge-container">
                         <div class="badge">
@@ -65,10 +64,8 @@ export class MyActivity extends LitElement {
                         <h2>${this.activity.lastCheck.name} - ${TimeConverter.fromEpoch(this.activity.lastCheck.date, 'both')}</h2>
                     </div>
 
-                    <div class="actions">
-                        <div class="action" @click="${() => { this.dispatchEvent(new CustomEvent('take-photo', { detail: { id: this.id }})) }}">
-                            <img class="action-photo" src="assets/icons/camera-32.png" />
-                        </div>
+                    <div class="action" @click="${() => { this.dispatchEvent(new CustomEvent('take-photo', { detail: { id: this.id }})) }}">
+                        <img class="action-photo" src="assets/icons/camera-32.png" />
                     </div>
                 </div>
             </div>
