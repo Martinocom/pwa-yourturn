@@ -108,21 +108,26 @@ export class AppActivities extends LitElement {
         while (activityHolder.firstChild) activityHolder.removeChild(activityHolder.firstChild)
         activityHolder.innerHTML = ""
 
+        let tmpActivities: any[] = []
         snapshot.forEach((doc) => {
           var activity = document.createElement('my-activity')
           activity.id = doc.id
           activity.activity = Activity.fromDoc(doc)
+          activity.currentUser = this.getCurrentUser();
+          activity.order = doc.data().order;
 
           if (activityHolder != null) {
-            activityHolder.append(activity)
             activity.addEventListener('take-photo', (e: any) => {
               if (e != null && e.detail != null && e.detail.id != null) {
                 this.onTakePhoto(e.detail.id)
               }
             })
+            tmpActivities.push(activity);
           }
-
         });
+
+        tmpActivities.sort((a, b) => a.order - b.order);
+        tmpActivities.forEach(act => activityHolder.appendChild(act))
       }
 
       this.disableLoading()
