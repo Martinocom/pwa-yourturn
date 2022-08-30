@@ -148,9 +148,6 @@ export class PhotoCapture extends LitElement {
       width: { min: WIDTH, max: WIDTH, ideal: WIDTH },
       height: { min: HEGIHT, max: HEGIHT, ideal: HEGIHT},
       facingMode: "environment",
-      aspectRatio: {
-        exact: WIDTH / HEGIHT,
-      },
     },
   };
 
