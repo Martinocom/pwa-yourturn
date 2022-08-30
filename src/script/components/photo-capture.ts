@@ -235,8 +235,6 @@ export class PhotoCapture extends LitElement {
 
         let data = this.canvas.toDataURL('image/png')
         this.photo.setAttribute('src', data);
-
-        alert(`Video: W${this.video.getAttribute('width')}, H${this.video.getAttribute('height')}\n\nCanvas: W${this.canvas.width}, H${this.canvas.height}\n\nConstrains: W${this.constraints.video.width.min}, H${this.constraints.video.height.min}`)
     } else {
         this.clearPicture()
     }
