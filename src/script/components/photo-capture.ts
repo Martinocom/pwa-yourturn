@@ -1,6 +1,9 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
 
+const WIDTH = 320;
+const HEGIHT = 240;
+
 @customElement('photo-capture')
 export class PhotoCapture extends LitElement {
 
@@ -139,16 +142,17 @@ export class PhotoCapture extends LitElement {
   @property({type: Boolean})
   private isRotating = false;
 
-
   private constraints = {
     audio: false,
     video: {
-      width: { min: 320, max: 320 },
-      height: { min: 240, max: 240},
-      facingMode: "environment"
+      width: { min: WIDTH, max: WIDTH, ideal: WIDTH },
+      height: { min: HEGIHT, max: HEGIHT, ideal: HEGIHT},
+      facingMode: "environment",
+      aspectRatio: {
+        exact: WIDTH / HEGIHT,
+      },
     },
   };
-
 
   constructor() {
     super();
@@ -283,7 +287,7 @@ export class PhotoCapture extends LitElement {
           ${this.video}
           ${this.canvas}
           <div id="close" @click=${this.onCloseClick}>x</div>
-          <div id="rotate" class="${this.isRotating || !this.isStreaming ? "hidden" : ""}" @click=${this.onRotateClick}>⭯</div>
+          <div id="rotate" class="${this.isRotating || !this.isStreaming ? "hidden" : ""}" @click=${this.onRotateClick}>↺</div>
         </div>
 
         <div id="controls" class="${this.isLoaded ? "" : "hidden"}">
