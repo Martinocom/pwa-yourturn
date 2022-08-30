@@ -1,6 +1,6 @@
 import { css } from 'lit';
 
-const buttonSize = css`2.5em`;
+const buttonSize = css`2.6em`;
 const photoSize = css`1.4em`;
 const badgeHeight = css`1.7em`;
 
