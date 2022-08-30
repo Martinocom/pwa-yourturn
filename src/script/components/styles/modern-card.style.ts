@@ -10,7 +10,7 @@ return css`
     border-radius: var(--app-border-radius-big);
     box-shadow: var(--app-shadow);
     min-width: var(--app-min-card-width);
-    background: var(--app-color-white);
+    background: var(--card-background);
     overflow: hidden;
     box-sizing: border-box;
     outline: none;

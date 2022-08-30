@@ -41,13 +41,14 @@ html, body {
 @media (prefers-color-scheme: dark) {
   html,
   body {
-    background: #181818;
+    background: #282828;
   }
 
   fluent-design-system-provider {
     color: white;
 
     --accent-foreground-rest: white;
+    --card-background: #1E2019BB;
   }
 }
 
@@ -70,6 +71,8 @@ html, body {
     --neutral-fill-rest: #5d5d5d;
 
     --neutral-fill-input-active: #e5e5e5;
+
+    --card-background: #FDF7FA;
   }
 
 }
