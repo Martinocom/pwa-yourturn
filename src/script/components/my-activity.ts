@@ -2,8 +2,6 @@ import { LitElement, html } from 'lit';
 import { property, customElement } from 'lit/decorators.js';
 import { Activity } from '../model/activity';
 import { TimeConverter } from '../utils/time-converter';
-import { defaultStyle } from './styles/default.style';
-import { differentCardStyle } from './styles/different-card.style';
 import { modernCardStyle } from './styles/modern-card.style';
 
 @customElement('my-activity')
@@ -45,7 +43,8 @@ export class MyActivity extends LitElement {
         return html `
             <div class="card" id="card">
                 <div class="image-container">
-                    <img id="image" src='${this.activity.image}'/>
+                    <div style="height: 8em"></div>
+                    <!--<img id="image" src='${this.activity.image}'/>-->
 
                     <div class="badge-container">
                         <div class="badge">
