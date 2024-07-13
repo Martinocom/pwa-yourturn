@@ -1,6 +1,6 @@
 import { LitElement, css, html } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithRedirect, getRedirectResult } from "firebase/auth";
+import { getAuth, setPersistence, browserSessionPersistence, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 // For more info on the @pwabuilder/pwainstall component click here https://github.com/pwa-builder/pwa-install
 import '@pwabuilder/pwainstall';
@@ -76,9 +76,12 @@ export class AppLogin extends LitElement {
       const provider = new GoogleAuthProvider();
       auth.languageCode = 'it'
 
-      await signInWithRedirect(auth, provider);
+      const result = await signInWithPopup(auth, provider);
 
-      const result = await getRedirectResult(auth);
+
+      // await signInWithRedirect(auth, provider);
+      //const result = await getRedirectResult(auth);
+
       if (result) {
         // This is the signed-in user
         //const user = result.user;
